@@ -4,10 +4,10 @@
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('api:server');
-var http = require('http');
-
+import app from '../src/app.js';
+import debug from 'debug';
+debug('api:server');
+import http from 'http';
 /**
  * Get port from environment and store in Express.
  */

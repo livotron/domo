@@ -1,13 +1,21 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var cors = require("cors");
+import createError from 'http-errors';
+import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+import cors from 'cors';
+import { URL } from 'url';
+import dotenv from 'dotenv';
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var testAPIRouter = require('./routes/testAPI');
+dotenv.config();
+
+const __filename = new URL('', import.meta.url).pathname;
+const __dirname = new URL('.', import.meta.url).pathname;
+
+import indexRouter from '../routes/index.js';
+import usersRouter from '../routes/users.js';
+import testAPIRouter from '../routes/testAPI.js';
+import { initDriver } from './neo4j.js';
 
 var app = express();
 
@@ -21,6 +29,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+initDriver(process.env.DB_URL, process.env.USER_NAME, process.env.PASSWORD);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -42,4 +52,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+export default app;
