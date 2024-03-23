@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Todo } from "features/todoList/types";
 
-const baseUrl = "http://localhost:4000";
+const baseUrl = "http://localhost:9000";
 
 export async function readTodos(): Promise<Todo[]> {
   const response = await axios.get<Todo[]>(baseUrl + window.location.pathname, {
