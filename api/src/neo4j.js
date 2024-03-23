@@ -10,6 +10,8 @@ export async function initDriver(uri, username, password) {
   driver = neo4j.driver(uri, neo4j.auth.basic(username, password));
 
   const res = await driver.getServerInfo();
-  console.log("RES", res)
+  console.log("Neo4jDriver:", res)
   return driver;
 }
+
+export const getSession = () => driver.session()
