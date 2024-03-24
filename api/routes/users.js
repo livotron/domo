@@ -12,13 +12,28 @@ router.get("/", function (req, res, next) {
 router.post("/register", async function (req, res, next) {
   try {
     const session = getSession();
+
+    const checkupQuery = await session.executeWrite((tx) => {
+      return tx.run("Match (u:User {name: $name}) RETURN u.name as name", {
+        name: req.body.name
+      });
+    });
+
+    if (checkupQuery.records.length > 0) {
+      return res.status(409).send({
+        message: "User already exists"
+      })
+    }
+
     const query = await session.executeWrite((tx) => {
-      return tx.run("CREATE (u:User {name: $name}) RETURN u.name as name", {
+      return tx.run("CREATE (u:User {name: $name, password: $password}) RETURN u.name as name", {
         name: req.body.name,
+        password: req.body.password
       });
     });
     res.send({ name: query.records[0].get("name") });
   } catch (e) {
+    console.log(e)
     res.status(500).send({
       message: "Error creating user",
       error: e,
@@ -61,10 +76,8 @@ router.post("/login", async function (req, res, next) {
       token,
     });
   } catch (e) {
-    console.log(e)
     res.status(500).send({
-      message: "Error checking user",
-      e,
+      message: e.message
     });
   }
 });
