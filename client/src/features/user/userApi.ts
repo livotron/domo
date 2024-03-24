@@ -27,3 +27,24 @@ export async function registerUser(User: User): Promise<User> {
 
   return response.data;
 }
+
+interface loginPayload {
+  name: string,
+  token: string
+}
+export async function loginUser(User: User): Promise<loginPayload> {
+  const response = await axios.post<loginPayload>(
+    "/users/login",
+    {
+      name: User.name,
+      password: User.password,
+    },
+    {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
+    }
+  );
+
+  return response.data;
+}

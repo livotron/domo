@@ -8,6 +8,11 @@ import { useAppDispatch } from "./store";
 import { Col, Container, Row } from "react-bootstrap";
 import { Register } from "features/user/Register";
 import { Login } from "features/user/Login";
+import { Link, Route, Routes } from "react-router-dom";
+import { Account } from "features/user/Account";
+import FreeComponent from "features/test/FreeComponent";
+import AuthComponent from "features/test/AuthComponent";
+import { ProtectedRoutes } from "./ProtectedRoute";
 
 function App() {
   // const dispatch = useAppDispatch();
@@ -16,16 +21,31 @@ function App() {
   //   dispatch(loadTodos());
   // }, [dispatch])
   return (
-    <Container>
+    <>
       <Row>
-        <Col xs={12} sm={12} md={6} lg={6}>
-          <Register />
-        </Col>
-        <Col xs={12} sm={12} md={6} lg={6}>
-          <Login />
+        <Col className="text-center">
+          <h1>React Authentication Tutorial</h1>
+
+          <section id="navigation">
+            <Link to="/">Home</Link>
+            <Link to="/free">Free Component</Link>
+            <Link to="/auth">Auth Component</Link>
+          </section>
         </Col>
       </Row>
-    </Container>
+      <Routes>
+        <Route path="/" element={<Account />} />
+        <Route path="/free" element={<FreeComponent />} />
+        <Route
+          path="/auth"
+          element={
+            <ProtectedRoutes>
+              <AuthComponent />
+            </ProtectedRoutes>
+          }
+        />
+      </Routes>
+    </>
   );
 }
 

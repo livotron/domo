@@ -18,7 +18,7 @@ export const Register = () => {
       setRegistered(true);
     } catch(e: any) {
       console.error(e)
-      setError(e.message)
+      setError(e.response.data.message)
     }
     
   };
