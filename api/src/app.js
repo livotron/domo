@@ -19,7 +19,6 @@ import { initDriver } from './neo4j.js';
 
 var app = express();
 
-app.set('view engine', 'html');
 app.use(express.static(path.join(__dirname, '../../client/build')))
 
 app.use(cors());
