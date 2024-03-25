@@ -7,7 +7,6 @@ export default async (req, res, next) => {
     req.user = decodedToken;
     next();
   } catch (error) {
-    console.log(error.message)
     res.status(401).json({
       message: 'Unauthorised',
     });

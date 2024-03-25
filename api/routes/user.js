@@ -2,6 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { getSession } from "../src/neo4j.js";
 import auth from "../src/auth.js";
+import { getUserByName, mergeUser } from "../models/user.js";
 
 var router = express.Router();
 
@@ -12,32 +13,18 @@ router.get("/", function (req, res, next) {
 
 router.post("/register", async function (req, res, next) {
   try {
-    const session = getSession();
+    const user = await getUserByName(req.body.name);
 
-    const checkupQuery = await session.executeWrite((tx) => {
-      return tx.run("Match (u:User {name: $name}) RETURN u.name as name", {
-        name: req.body.name,
-      });
-    });
-
-    if (checkupQuery.records.length > 0) {
+    if (user) {
       return res.status(409).send({
         message: "User already exists",
       });
     }
 
-    const query = await session.executeWrite((tx) => {
-      return tx.run(
-        "CREATE (u:User {name: $name, password: $password}) RETURN u.name as name",
-        {
-          name: req.body.name,
-          password: req.body.password,
-        }
-      );
-    });
-    res.send({ name: query.records[0].get("name") });
+    const registeredUser = await mergeUser(req.body.name, req.body.password);
+    const {password, ...passwordlessUser} = registeredUser
+    res.send(passwordlessUser);
   } catch (e) {
-    console.log(e);
     res.status(500).send({
       message: "Error creating user",
       error: e,
@@ -47,30 +34,22 @@ router.post("/register", async function (req, res, next) {
 
 router.post("/login", async function (req, res, next) {
   try {
-    const session = getSession();
-    const query = await session.executeRead((tx) => {
-      return tx.run("MATCH (u:User {name: $name}) RETURN u as user", {
-        name: req.body.name,
-      });
-    });
+    const user = await getUserByName(req.body.name);
 
-    if (!query.records[0]) {
+    if (!user) {
       return res.status(401).send({
         message: "User data incorrect",
       });
     }
 
-    const user = query.records[0].get("user");
-    console.log(user);
-
-    if (user.properties.password !== req.body.password) {
+    if (user.password !== req.body.password) {
       return res.status(401).send({
         message: "User data incorrect",
       });
     }
     const token = jwt.sign(
       {
-        name: user.properties.name,
+        name: user.name,
       },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
@@ -79,7 +58,7 @@ router.post("/login", async function (req, res, next) {
     //   return success res
     res.status(200).send({
       message: "Login Successful",
-      name: user.properties.name,
+      user,
       token,
     });
   } catch (e) {
@@ -90,19 +69,10 @@ router.post("/login", async function (req, res, next) {
 });
 
 router.get('/me', auth , async function (req,res) {
-  console.log('user', req.user)
   try {
-    const session = getSession();
-    const query = await session.executeRead((tx) => {
-      return tx.run("MATCH (u:User {name: $name}) RETURN u as user", {
-        name: req.user.name,
-      });
-    });
+    const user = await getUserByName(req.user.name)
 
-    const user = query.records[0].get('user');
-    return res.status(200).send({
-      name: user.properties.name
-    })
+    return res.status(200).send(user)
   } catch(e) {
     res.status(500).send({
       message: e.message
