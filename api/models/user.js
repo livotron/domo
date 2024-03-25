@@ -2,13 +2,13 @@ import { getSession } from "../src/neo4j.js";
 
 export const getUserByName = async (name, sessionContext) => {
   const session = getSession(sessionContext);
-  const checkupQuery = await session.executeWrite((tx) => {
+  const checkupQuery = await session.executeRead((tx) => {
     return tx.run("Match (u:User {name: $name}) RETURN u as user", {
       name: name,
     });
   });
   if (!checkupQuery.records.length) {
-    return null;
+    throw new Error("User not found");
   }
   return checkupQuery.records[0].get("user").properties;
 };
@@ -27,6 +27,23 @@ export const mergeUser = async (name, password, sessionContext) => {
   });
 
   return query.records[0].get("user").properties;
+};
+
+export const getPartners = async (name, sessionContext) => {
+  const session = getSession(sessionContext);
+  const partnersRecords = await session.executeRead((tx) => {
+    return tx.run(
+      "Match (u:User {name: $name})-[s:SUPPORTS]->(p:User) RETURN s as support,p as partner",
+      {
+        name: name,
+      }
+    );
+  });
+  console.log(partnersRecords.records);
+  return partnersRecords.records.map((rec) => ({
+    direction: rec.get("support").properties.direction,
+    user: rec.get("partner").properties,
+  }));
 };
 
 const getOppositeDirection = (direction) => {
@@ -110,7 +127,7 @@ export const verifyPartner = async (
         }
       );
     });
-  
+
     const verifiedMe = await session.executeRead((tx) => {
       return tx.run(
         `MATCH (u:User {name: $userName})<-[:VERIFIES{direction: $oppositeDirection, hash: $hash}]-(:User {name: $partnerName})
@@ -124,7 +141,7 @@ export const verifyPartner = async (
         }
       );
     });
-  
+
     if (verifiedMe.records.length) {
       const supportRelations = await session.executeWrite((tx) => {
         return tx.run(
@@ -143,7 +160,6 @@ export const verifyPartner = async (
         );
       });
     }
-  
   } else {
     await session.executeWrite((tx) => {
       return tx.run(
@@ -160,5 +176,6 @@ export const verifyPartner = async (
       );
     });
   }
-  return;
+  const partnerRecords = getPartners(userName, sessionContext)
+  return partnerRecords;
 };

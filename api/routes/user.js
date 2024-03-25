@@ -2,7 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { getSession } from "../src/neo4j.js";
 import auth from "../src/auth.js";
-import { getUserByName, mergeUser, verifyPartner } from "../models/user.js";
+import { getPartners, getUserByName, mergeUser, verifyPartner } from "../models/user.js";
 
 var router = express.Router();
 
@@ -100,5 +100,16 @@ router.post("/verify", auth, async function (req, res) {
     });
   }
 });
+
+router.get("/partners", auth, async function (req,res) {
+  try {
+    const partners = await getPartners(req.user.name, req);
+    return res.send(partners)
+  } catch (error) {
+    res.status(500).send({
+      message: error.message
+    })
+  }
+})
 
 export default router;
