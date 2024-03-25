@@ -1,9 +1,8 @@
 import { getSession } from "../src/neo4j.js";
 
 
-export const getUserByName = async (name) => {
-  const session = getSession();
-
+export const getUserByName = async (name, sessionContext) => {
+  const session = getSession(sessionContext);
   const checkupQuery = await session.executeWrite((tx) => {
     return tx.run("Match (u:User {name: $name}) RETURN u as user", {
       name: name,
@@ -14,8 +13,8 @@ export const getUserByName = async (name) => {
   }  return checkupQuery.records[0].get('user').properties
 }
 
-export const mergeUser = async (name, password) => {
-  const session = getSession();
+export const mergeUser = async (name, password, sessionContext) => {
+  const session = getSession(sessionContext);
 
   const query = await session.executeWrite((tx) => {
     return tx.run(

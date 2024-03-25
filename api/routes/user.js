@@ -13,7 +13,7 @@ router.get("/", function (req, res, next) {
 
 router.post("/register", async function (req, res, next) {
   try {
-    const user = await getUserByName(req.body.name);
+    const user = await getUserByName(req.body.name, req);
 
     if (user) {
       return res.status(409).send({
@@ -21,7 +21,7 @@ router.post("/register", async function (req, res, next) {
       });
     }
 
-    const registeredUser = await mergeUser(req.body.name, req.body.password);
+    const registeredUser = await mergeUser(req.body.name, req.body.password, req);
     const {password, ...passwordlessUser} = registeredUser
     res.send(passwordlessUser);
   } catch (e) {
@@ -34,7 +34,7 @@ router.post("/register", async function (req, res, next) {
 
 router.post("/login", async function (req, res, next) {
   try {
-    const user = await getUserByName(req.body.name);
+    const user = await getUserByName(req.body.name, req);
 
     if (!user) {
       return res.status(401).send({
@@ -70,7 +70,7 @@ router.post("/login", async function (req, res, next) {
 
 router.get('/me', auth , async function (req,res) {
   try {
-    const user = await getUserByName(req.user.name)
+    const user = await getUserByName(req.user.name, req)
 
     return res.status(200).send(user)
   } catch(e) {
