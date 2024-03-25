@@ -1,10 +1,7 @@
 import { FormEvent, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { loginUser } from "./userApi";
-import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
-
-const cookies = new Cookies();
 
 export const Login = () => {
   const [name, setName] = useState<string>("");
@@ -20,7 +17,7 @@ export const Login = () => {
     try {
       const res = await loginUser({ name, password });
       console.log(res);
-      cookies.set("TOKEN", res.token);
+      localStorage.setItem("TOKEN", res.token);
       setLogin(true);
       navigate("/auth");
     } catch (e: any) {

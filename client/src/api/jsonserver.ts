@@ -16,3 +16,17 @@ export async function readTodos(): Promise<Todo[]> {
 export async function writeTodos(todos: Todo[]) {
   await axios.put<Todo[]>('/testAPI/', todos);
 }
+
+axios.interceptors.request.use(
+  config => {
+    const token = localStorage.getItem("TOKEN");
+    if (token) {
+      config.headers['Authorization'] = 'Bearer ' + token
+    }
+    // config.headers['Content-Type'] = 'application/json';
+    return config
+  },
+  error => {
+    Promise.reject(error)
+  }
+)

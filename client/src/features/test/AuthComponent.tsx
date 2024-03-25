@@ -2,18 +2,16 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import Cookies from "universal-cookie";
-const cookies = new Cookies();
 
 export default function AuthComponent() {
   const [message, setMessage] = useState<string>("");
   const navigate = useNavigate();
   const logout = () => {
-    cookies.remove("TOKEN", { path: "/" });
+    localStorage.removeItem("TOKEN");
     navigate("/");
   };
   useEffect(() => {
-    const token = cookies.get("TOKEN");
+    const token = localStorage.getItem("TOKEN");
 
     // set configurations for the API call here
     const configuration = {
