@@ -13,6 +13,7 @@ import { Account } from "features/user/Account";
 import FreeComponent from "features/test/FreeComponent";
 import AuthComponent from "features/test/AuthComponent";
 import { ProtectedRoutes } from "./ProtectedRoute";
+import { UpdateRelationForm } from "features/user/UpdateRelationForm";
 
 function App() {
   // const dispatch = useAppDispatch();
@@ -28,6 +29,7 @@ function App() {
 
           <section id="navigation">
             <Link to="/">Home</Link>
+            <Link to="/update-relation">Update Relation</Link>
             <Link to="/free">Free Component</Link>
             <Link to="/auth">Auth Component</Link>
           </section>
@@ -36,6 +38,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Account />} />
         <Route path="/free" element={<FreeComponent />} />
+        <Route path="update-relation" element={
+          <ProtectedRoutes>
+            <UpdateRelationForm />
+          </ProtectedRoutes>
+        } />
         <Route
           path="/auth"
           element={

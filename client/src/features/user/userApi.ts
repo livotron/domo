@@ -29,8 +29,8 @@ export async function registerUser(User: User): Promise<User> {
 }
 
 interface loginPayload {
-  name: string,
-  token: string
+  name: string;
+  token: string;
 }
 export async function loginUser(User: User): Promise<loginPayload> {
   const response = await axios.post<loginPayload>(
@@ -45,6 +45,12 @@ export async function loginUser(User: User): Promise<loginPayload> {
       },
     }
   );
+
+  return response.data;
+}
+
+export async function me(): Promise<{ name: string }> {
+  const response = await axios.get<{ name: string }>("/users/me");
 
   return response.data;
 }

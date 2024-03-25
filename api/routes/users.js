@@ -1,6 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { getSession } from "../src/neo4j.js";
+import auth from "../src/auth.js";
 
 var router = express.Router();
 
@@ -67,11 +68,9 @@ router.post("/login", async function (req, res, next) {
         message: "User data incorrect",
       });
     }
-
     const token = jwt.sign(
       {
-        userId: user._id,
-        userEmail: user.email,
+        name: user.properties.name,
       },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
@@ -89,5 +88,26 @@ router.post("/login", async function (req, res, next) {
     });
   }
 });
+
+router.get('/me', auth , async function (req,res) {
+  console.log('user', req.user)
+  try {
+    const session = getSession();
+    const query = await session.executeRead((tx) => {
+      return tx.run("MATCH (u:User {name: $name}) RETURN u as user", {
+        name: req.user.name,
+      });
+    });
+
+    const user = query.records[0].get('user');
+    return res.status(200).send({
+      name: user.properties.name
+    })
+  } catch(e) {
+    res.status(500).send({
+      message: e.message
+    })
+  }
+})
 
 export default router;
