@@ -13,7 +13,7 @@ export async function readUsers(): Promise<User> {
 
 export async function registerUser(User: User): Promise<User> {
   const response = await axios.post<User>(
-    "/users/register",
+    "/user/register",
     {
       name: User.name,
       password: User.password,
@@ -34,7 +34,7 @@ interface loginPayload {
 }
 export async function loginUser(User: User): Promise<loginPayload> {
   const response = await axios.post<loginPayload>(
-    "/users/login",
+    "/user/login",
     {
       name: User.name,
       password: User.password,
@@ -50,7 +50,7 @@ export async function loginUser(User: User): Promise<loginPayload> {
 }
 
 export async function me(): Promise<{ name: string }> {
-  const response = await axios.get<{ name: string }>("/users/me");
+  const response = await axios.get<{ name: string }>("/user/me");
 
   return response.data;
 }
