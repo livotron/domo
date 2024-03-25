@@ -28,6 +28,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 initDriver(process.env.DB_URL, process.env.USER_NAME, process.env.PASSWORD);
+app.use(neo4jSessionCleanup);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
