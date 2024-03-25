@@ -13,9 +13,9 @@ const __filename = new URL('', import.meta.url).pathname;
 const __dirname = new URL('.', import.meta.url).pathname;
 
 import indexRouter from '../routes/index.js';
-import usersRouter from '../routes/users.js';
+import userRouter from '../routes/user.js';
 import testAPIRouter from '../routes/testAPI.js';
-import { initDriver } from './neo4j.js';
+import { initDriver, neo4jSessionCleanup } from './neo4j.js';
 
 var app = express();
 
@@ -31,7 +31,7 @@ initDriver(process.env.DB_URL, process.env.USER_NAME, process.env.PASSWORD);
 app.use(neo4jSessionCleanup);
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/user', userRouter);
 app.use('/testAPI', testAPIRouter)
 
 app.get('*', (req, res) => {
