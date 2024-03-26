@@ -59,11 +59,9 @@ const getOppositeDirection = (direction) => {
   }
 };
 
-export const verifyPartner = async (
+export const deleteOldVerification = async (
   userName,
-  partnerName,
   direction,
-  hash,
   sessionContext
 ) => {
   const session = getSession(sessionContext);
@@ -100,19 +98,39 @@ export const verifyPartner = async (
       }
     );
   });
-
-  const partnerRecord = await session.executeRead((tx) => {
+};
+export const verifyNewUser = async (
+  userName,
+  partnerName,
+  direction,
+  hash,
+  sessionContext
+) => {
+  const session = getSession(sessionContext);
+  await session.executeWrite((tx) => {
     return tx.run(
-      `MATCH (u:User {name: $partnerName})
-      RETURN u
+      `MATCH (u:User {name: $userName})
+    MERGE (u)-[v:VERIFIES{direction: $direction, hash: $hash}]->(:User {name: $partnerName})
+    RETURN v
       `,
       {
+        userName,
         partnerName,
+        direction,
+        hash,
       }
     );
   });
+};
 
-  if (partnerRecord.records.length) {
+export const verifyExistingUser = async (
+  userName,
+  partnerName,
+  direction,
+  hash,
+  sessionContext
+) => {
+  const session = getSession(sessionContext);
     await session.executeWrite((tx) => {
       return tx.run(
         `MATCH (u:User {name: $userName}), (p:User {name: $partnerName})
@@ -127,23 +145,17 @@ export const verifyPartner = async (
         }
       );
     });
+};
 
-    const verifiedMe = await session.executeRead((tx) => {
-      return tx.run(
-        `MATCH (u:User {name: $userName})<-[:VERIFIES{direction: $oppositeDirection, hash: $hash}]-(:User {name: $partnerName})
-        RETURN u
-        `,
-        {
+export const createSupportRelations = async (
           userName,
           partnerName,
-          oppositeDirection: getOppositeDirection(direction),
+  direction,
           hash,
-        }
-      );
-    });
-
-    if (verifiedMe.records.length) {
-      const supportRelations = await session.executeWrite((tx) => {
+  sessionContext
+) => {
+  const session = getSession(sessionContext);
+  await session.executeWrite((tx) => {
         return tx.run(
           `
           MATCH (u:User {name: $userName}), (p:User {name: $partnerName})
@@ -159,23 +171,51 @@ export const verifyPartner = async (
           }
         );
       });
-    }
-  } else {
-    await session.executeWrite((tx) => {
+};
+
+export const isVerifiedByPartner = async (
+  userName,
+  partnerName,
+  direction,
+  hash,
+  sessionContext
+) => {
+  const session = getSession(sessionContext);
+  const verifiedMe = await session.executeRead((tx) => {
       return tx.run(
-        `MATCH (u:User {name: $userName})
-      MERGE (u)-[v:VERIFIES{direction: $direction, hash: $hash}]->(:User {name: $partnerName})
-      RETURN v
+      `MATCH (u:User {name: $userName})<-[:VERIFIES{direction: $oppositeDirection, hash: $hash}]-(:User {name: $partnerName})
+      RETURN u
       `,
         {
           userName,
           partnerName,
-          direction,
+        oppositeDirection: getOppositeDirection(direction),
           hash,
         }
       );
     });
+  return Boolean(verifiedMe.records.length)
+}
+
+export const verifyPartner = async (
+  userName,
+  partnerName,
+  direction,
+  hash,
+  sessionContext
+) => {
+  await deleteOldVerification(userName, direction, sessionContext);
+  const partnerRecord = await getUserByName(partnerName, sessionContext);
+
+  if (partnerRecord) {
+    await verifyExistingUser(userName, partnerName, direction,hash, sessionContext);
+
+    if (await isVerifiedByPartner(userName, partnerName, direction, hash, sessionContext)) {
+      await createSupportRelations(userName, partnerName, direction, hash, sessionContext);
+    }
+  } else {
+    await verifyNewUser(userName, partnerName, direction, hash, sessionContext);
   }
-  const partnerRecords = getPartners(userName, sessionContext)
+  const partnerRecords = await getPartners(userName, sessionContext);
   return partnerRecords;
 };

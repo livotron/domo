@@ -2,7 +2,12 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { getSession } from "../src/neo4j.js";
 import auth from "../src/auth.js";
-import { getPartners, getUserByName, mergeUser, verifyPartner } from "../models/user.js";
+import {
+  getPartners,
+  getUserByName,
+  mergeUser,
+  verifyPartner,
+} from "../models/user.js";
 
 var router = express.Router();
 
