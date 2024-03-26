@@ -1,5 +1,5 @@
 import axios from "axios";
-import { User } from "./types";
+import { Partner, User } from "./types";
 
 export async function readUsers(): Promise<User> {
   const response = await axios.get<User>("/testAPI/", {
@@ -16,7 +16,7 @@ export async function registerUser(User: User): Promise<User> {
     "/user/register",
     {
       name: User.name,
-      password: User.password,
+      // password: User.password,
     },
     {
       headers: {
@@ -37,7 +37,7 @@ export async function loginUser(User: User): Promise<loginPayload> {
     "/user/login-old",
     {
       name: User.name,
-      password: User.password,
+      // password: User.password,
     },
     {
       headers: {
@@ -49,8 +49,14 @@ export async function loginUser(User: User): Promise<loginPayload> {
   return response.data;
 }
 
-export async function me(): Promise<{ name: string }> {
-  const response = await axios.get<{ name: string }>("/user/me");
+export async function getMe(): Promise<User> {
+  const response = await axios.get<User>("/user/me");
+
+  return response.data;
+}
+
+export async function getPartners(name: string): Promise<Partner[]> {
+  const response = await axios.get<Partner[]>(`/user/partners/${name}`);
 
   return response.data;
 }
