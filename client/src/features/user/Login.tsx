@@ -14,16 +14,16 @@ export const Login = () => {
     e.preventDefault();
     setLogin(false);
     setError("");
-    try {
-      const res = await loginUser({ name, password });
-      console.log(res);
-      localStorage.setItem("TOKEN", res.token);
-      setLogin(true);
-      navigate("/auth");
-    } catch (e: any) {
-      console.error(e);
-      setError(e.response.data.message);
-    }
+    // try {
+    //   const res = await loginUser({ name, password });
+    //   console.log(res);
+    //   localStorage.setItem("TOKEN", res.token);
+    //   setLogin(true);
+    //   navigate("/auth");
+    // } catch (e: any) {
+    //   console.error(e);
+    //   setError(e.response.data.message);
+    // }
   };
   return (
     <>

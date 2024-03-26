@@ -1,6 +1,5 @@
 export type User = {
-  name: string,
-  password: string,
+  name: string
 }
 
 
@@ -9,6 +8,11 @@ export enum Direction {
   right = "RIGHT",
   left = "LEFT",
   down = 'DOWN'
+}
+
+export type Partner = {
+  direction: ValidationRelation,
+  user: User
 }
 
 export type ValidationRelation = {

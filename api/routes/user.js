@@ -110,9 +110,9 @@ router.post("/verify", auth, async function (req, res) {
   }
 });
 
-router.get("/partners", auth, async function (req, res) {
+router.get("/partners/:name", async function (req, res) {
   try {
-    const partners = await getPartners(req.user.name, req);
+    const partners = await getPartners(req.params.name, req);
     return res.send(partners);
   } catch (error) {
     res.status(500).send({
@@ -153,8 +153,14 @@ router.post("/login", async function (req, res) {
       },
       []
     );
-
-    return res.send(supportRelations);
+    const token = jwt.sign(
+      {
+        name,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+    return res.send({ partners: supportRelations, token});
   } catch (error) {
     res.status(500).send({
       message: error.message,

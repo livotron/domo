@@ -12,14 +12,14 @@ export const Register = () => {
     e.preventDefault();
     setRegistered(false);
     setError("");
-    try {
-      const res = await registerUser({ name, password })
-      console.log(res)
-      setRegistered(true);
-    } catch(e: any) {
-      console.error(e)
-      setError(e.response.data.message)
-    }
+    // try {
+    //   const res = await registerUser({ name, password })
+    //   console.log(res)
+    //   setRegistered(true);
+    // } catch(e: any) {
+    //   console.error(e)
+    //   setError(e.response.data.message)
+    // }
     
   };
   return (

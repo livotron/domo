@@ -14,13 +14,14 @@ import FreeComponent from "features/test/FreeComponent";
 import AuthComponent from "features/test/AuthComponent";
 import { ProtectedRoutes } from "./ProtectedRoute";
 import { UpdateRelationForm } from "features/user/UpdateRelationForm";
+import { fetchMe } from "features/user/userSlice";
 
 function App() {
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-  // useEffect(() => {
-  //   dispatch(loadTodos());
-  // }, [dispatch])
+  useEffect(() => {
+    dispatch(fetchMe());
+  }, [dispatch])
   return (
     <>
       <Row>
