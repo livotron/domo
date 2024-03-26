@@ -8,7 +8,7 @@ export const getUserByName = async (name, sessionContext) => {
     });
   });
   if (!checkupQuery.records.length) {
-    throw new Error("User not found");
+    return null;
   }
   return checkupQuery.records[0].get("user").properties;
 };
@@ -39,7 +39,6 @@ export const getPartners = async (name, sessionContext) => {
       }
     );
   });
-  console.log(partnersRecords.records);
   return partnersRecords.records.map((rec) => ({
     direction: rec.get("support").properties.direction,
     user: rec.get("partner").properties,
@@ -112,7 +111,7 @@ export const verifyNewUser = async (
       `MATCH (u:User {name: $userName})
     MERGE (u)-[v:VERIFIES{direction: $direction, hash: $hash}]->(:User {name: $partnerName})
     RETURN v
-      `,
+    `,
       {
         userName,
         partnerName,
@@ -131,46 +130,49 @@ export const verifyExistingUser = async (
   sessionContext
 ) => {
   const session = getSession(sessionContext);
-    await session.executeWrite((tx) => {
-      return tx.run(
-        `MATCH (u:User {name: $userName}), (p:User {name: $partnerName})
-      MERGE (u)-[v:VERIFIES{direction: $direction, hash: $hash}]->(p)
-      RETURN v
-      `,
-        {
-          userName,
-          partnerName,
-          direction,
-          hash,
-        }
-      );
-    });
+  await session.executeWrite((tx) => {
+    return tx.run(
+      `MATCH (u:User {name: $userName}), (p:User {name: $partnerName})
+    MERGE (u)-[v:VERIFIES{direction: $direction, hash: $hash}]->(p)
+    RETURN v
+    `,
+      {
+        userName,
+        partnerName,
+        direction,
+        hash,
+      }
+    );
+  });
 };
 
 export const createSupportRelations = async (
-          userName,
-          partnerName,
+  userName,
+  partnerName,
   direction,
-          hash,
   sessionContext
 ) => {
   const session = getSession(sessionContext);
-  await session.executeWrite((tx) => {
-        return tx.run(
-          `
-          MATCH (u:User {name: $userName}), (p:User {name: $partnerName})
-          CREATE (u)-[r:SUPPORTS{direction: $direction}]->(p),
-          (u)<-[t:SUPPORTS{direction: $oppositeDirection}]-(p)
-          RETURN r,t
-          `,
-          {
-            userName,
-            partnerName,
-            direction,
-            oppositeDirection: getOppositeDirection(direction),
-          }
-        );
-      });
+  const supportRelations = await session.executeWrite((tx) => {
+    return tx.run(
+      `
+      MATCH (u:User {name: $userName}), (p:User {name: $partnerName})
+      CREATE (u)-[s:SUPPORTS{direction: $direction}]->(p),
+      (u)<-[t:SUPPORTS{direction: $oppositeDirection}]-(p)
+      RETURN s as support,p as partner
+      `,
+      {
+        userName,
+        partnerName,
+        direction,
+        oppositeDirection: getOppositeDirection(direction),
+      }
+    );
+  });
+  return supportRelations.records.map((rec) => ({
+    direction: rec.get("support").properties.direction,
+    user: rec.get("partner").properties,
+  }));
 };
 
 export const isVerifiedByPartner = async (
@@ -182,20 +184,20 @@ export const isVerifiedByPartner = async (
 ) => {
   const session = getSession(sessionContext);
   const verifiedMe = await session.executeRead((tx) => {
-      return tx.run(
+    return tx.run(
       `MATCH (u:User {name: $userName})<-[:VERIFIES{direction: $oppositeDirection, hash: $hash}]-(:User {name: $partnerName})
       RETURN u
       `,
-        {
-          userName,
-          partnerName,
+      {
+        userName,
+        partnerName,
         oppositeDirection: getOppositeDirection(direction),
-          hash,
-        }
-      );
-    });
-  return Boolean(verifiedMe.records.length)
-}
+        hash,
+      }
+    );
+  });
+  return Boolean(verifiedMe.records.length);
+};
 
 export const verifyPartner = async (
   userName,
@@ -208,14 +210,74 @@ export const verifyPartner = async (
   const partnerRecord = await getUserByName(partnerName, sessionContext);
 
   if (partnerRecord) {
-    await verifyExistingUser(userName, partnerName, direction,hash, sessionContext);
+    await verifyExistingUser(
+      userName,
+      partnerName,
+      direction,
+      hash,
+      sessionContext
+    );
 
-    if (await isVerifiedByPartner(userName, partnerName, direction, hash, sessionContext)) {
-      await createSupportRelations(userName, partnerName, direction, hash, sessionContext);
+    if (
+      await isVerifiedByPartner(
+        userName,
+        partnerName,
+        direction,
+        hash,
+        sessionContext
+      )
+    ) {
+      await createSupportRelations(
+        userName,
+        partnerName,
+        direction,
+        hash,
+        sessionContext
+      );
     }
   } else {
     await verifyNewUser(userName, partnerName, direction, hash, sessionContext);
   }
   const partnerRecords = await getPartners(userName, sessionContext);
   return partnerRecords;
+};
+
+export const checkVerifications = async (
+  userName,
+  verifications,
+  sessionContext
+) => {
+  const session = getSession(sessionContext);
+  const checkupQuery = await session.executeRead((tx) => {
+    return tx.run(
+      "Match (u:User {name: $name})<-[v:VERIFIES]-(p) RETURN p as user, v as verification",
+      {
+        name: userName,
+      }
+    );
+  });
+  if (!checkupQuery.records.length) {
+    return false;
+  }
+  const partnersVerifications = checkupQuery.records.map((rec) => ({
+    user: rec.get("user").properties,
+    verification: rec.get("verification").properties,
+  }));
+  const confirmations = verifications.map((verif) => {
+    const partnersVerification = partnersVerifications.find(
+      (pv) =>
+        pv.user.name === verif.name &&
+        pv.verification.direction ===
+        getOppositeDirection(verif.direction) &&
+        pv.verification.hash === verif.hash
+    );
+    return Boolean(partnersVerification)
+  });
+  const verified = confirmations.reduce((prev, curr) => {
+    if(curr === false) {
+      return false;
+    }
+    return prev;
+  }, true);
+  return verified;
 };

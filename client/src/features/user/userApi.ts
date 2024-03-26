@@ -34,7 +34,7 @@ interface loginPayload {
 }
 export async function loginUser(User: User): Promise<loginPayload> {
   const response = await axios.post<loginPayload>(
-    "/user/login",
+    "/user/login-old",
     {
       name: User.name,
       password: User.password,

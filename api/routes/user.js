@@ -3,9 +3,13 @@ import jwt from "jsonwebtoken";
 import { getSession } from "../src/neo4j.js";
 import auth from "../src/auth.js";
 import {
+  checkVerifications,
+  createSupportRelations,
+  deleteOldVerification,
   getPartners,
   getUserByName,
   mergeUser,
+  verifyExistingUser,
   verifyPartner,
 } from "../models/user.js";
 
@@ -41,7 +45,7 @@ router.post("/register", async function (req, res, next) {
   }
 });
 
-router.post("/login", async function (req, res, next) {
+router.post("/login-old", async function (req, res, next) {
   try {
     const user = await getUserByName(req.body.name, req);
 
@@ -98,7 +102,7 @@ router.post("/verify", auth, async function (req, res) {
       req.body.hash,
       req
     );
-    res.send(verify)
+    res.send(verify);
   } catch (e) {
     res.status(500).send({
       message: e.message,
@@ -106,15 +110,56 @@ router.post("/verify", auth, async function (req, res) {
   }
 });
 
-router.get("/partners", auth, async function (req,res) {
+router.get("/partners", auth, async function (req, res) {
   try {
     const partners = await getPartners(req.user.name, req);
-    return res.send(partners)
+    return res.send(partners);
   } catch (error) {
     res.status(500).send({
-      message: error.message
-    })
+      message: error.message,
+    });
   }
-})
+});
+
+router.post("/login", async function (req, res) {
+  try {
+    const { name, verifications } = req.body;
+    const verified = await checkVerifications(name, verifications, req);
+    if (!verified) {
+      return res.status(401).send({ message: "Unauthorized" });
+    }
+    await deleteOldVerification(name, "UP", req);
+    await deleteOldVerification(name, "RIGHT", req);
+    await deleteOldVerification(name, "DOWN", req);
+    await deleteOldVerification(name, "LEFT", req);
+
+    const supportRelations = await verifications.reduce(
+      async (memo, verification) => {
+        const results = await memo;
+        await verifyExistingUser(
+          name,
+          verification.name,
+          verification.direction,
+          verification.hash,
+          req
+        );
+        const supportRelation = await createSupportRelations(
+          name,
+          verification.name,
+          verification.direction,
+          req
+        );
+        return [...results, supportRelation];
+      },
+      []
+    );
+
+    return res.send(supportRelations);
+  } catch (error) {
+    res.status(500).send({
+      message: error.message,
+    });
+  }
+});
 
 export default router;
