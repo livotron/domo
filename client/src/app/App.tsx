@@ -14,35 +14,42 @@ import AuthComponent from "features/test/AuthComponent";
 import { ProtectedRoutes } from "./ProtectedRoute";
 import { UpdateRelationForm } from "features/user/UpdateRelationForm";
 import { fetchMe } from "features/user/userSlice";
+import { Container, Grid } from "@mui/material";
 
 function App() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(fetchMe());
-  }, [dispatch])
+  }, [dispatch]);
   return (
-    <>
-      {/* <Row>
-        <Col className="text-center">
-          <h1>React Authentication Tutorial</h1>
-
-          <section id="navigation">
-            <Link to="/">Home</Link>
-            <Link to="/update-relation">Update Relation</Link>
-            <Link to="/free">Free Component</Link>
-            <Link to="/auth">Auth Component</Link>
-          </section>
-        </Col>
-      </Row> */}
+    <Container>
+      <Grid container spacing={2}>
+        <Grid xs={1} item>Д</Grid>
+        <Grid item>
+          <Link to="/">Home</Link>
+        </Grid>
+        <Grid xs={2} item>
+          <Link to="/update-relation">Update Relation</Link>
+        </Grid>
+        <Grid xs={2} item>
+          <Link to="/free">Free Component</Link>
+        </Grid>
+        <Grid xs={2} item>
+          <Link to="/auth">Auth Component</Link>
+        </Grid>
+      </Grid>
       <Routes>
         <Route path="/" element={<Account />} />
         <Route path="/free" element={<FreeComponent />} />
-        <Route path="update-relation" element={
-          <ProtectedRoutes>
-            <UpdateRelationForm />
-          </ProtectedRoutes>
-        } />
+        <Route
+          path="update-relation"
+          element={
+            <ProtectedRoutes>
+              <UpdateRelationForm />
+            </ProtectedRoutes>
+          }
+        />
         <Route
           path="/auth"
           element={
@@ -52,7 +59,7 @@ function App() {
           }
         />
       </Routes>
-    </>
+    </Container>
   );
 }
 
