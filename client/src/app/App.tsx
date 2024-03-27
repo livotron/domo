@@ -2,34 +2,49 @@ import AddTodo from "features/todoList/AddTodo";
 import "../App.css";
 import TodoList from "features/todoList/TodoList";
 import Footer from "features/visibilityFilter/Footer";
-import { useEffect } from "react";
+import { FormEvent, MouseEvent, useEffect } from "react";
 import { loadTodos } from "features/todoList/todoSlice";
 import { useAppDispatch } from "./store";
 import { Register } from "features/user/Register";
 import { Login } from "features/user/Login";
-import { Link, Route, Routes } from "react-router-dom";
+import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import { Account } from "features/user/Account";
 import FreeComponent from "features/test/FreeComponent";
 import AuthComponent from "features/test/AuthComponent";
 import { ProtectedRoutes } from "./ProtectedRoute";
-import { UpdateRelationForm } from "features/user/UpdateRelationForm";
-import { fetchMe } from "features/user/userSlice";
-import { Container, Grid } from "@mui/material";
+import { UpdateRelationPage } from "features/user/UpdateRelationPage";
+import { fetchMe, removeMe } from "features/user/userSlice";
+import { Button, Container, Grid } from "@mui/material";
+import { useSelector } from "react-redux";
+import { RootState } from "./rootReducer";
+import { DisplayRelationsPage } from "features/user/DisplayRelationsPage";
 
 function App() {
   const dispatch = useAppDispatch();
+  const me = useSelector((state: RootState) => state.user.me);
 
   useEffect(() => {
-    dispatch(fetchMe());
+    if (localStorage.getItem("TOKEN")) {
+      dispatch(fetchMe());
+    }
   }, [dispatch]);
+  const navigate = useNavigate();
+  const handleLogout = (e: MouseEvent) => {
+    e.preventDefault();
+    localStorage.removeItem("TOKEN");
+    dispatch(removeMe());
+    navigate("/");
+  };
   return (
     <Container>
       <Grid container spacing={2}>
-        <Grid xs={1} item>Д</Grid>
-        <Grid item>
+        <Grid xs={1} item>
+          Д
+        </Grid>
+        <Grid item xs={2}>
           <Link to="/">Home</Link>
         </Grid>
-        <Grid xs={2} item>
+        <Grid item xs={2}>
           <Link to="/update-relation">Update Relation</Link>
         </Grid>
         <Grid xs={2} item>
@@ -38,15 +53,31 @@ function App() {
         <Grid xs={2} item>
           <Link to="/auth">Auth Component</Link>
         </Grid>
+        {me.name && (
+          <>
+            <Grid xs={2} item>
+              <Link to="/me">{me.name}</Link>
+            </Grid>
+            <Grid xs={1} item>
+              <Button
+                type="submit"
+                variant="contained"
+                onClick={(e: MouseEvent) => handleLogout(e)}
+              >
+                Logout
+              </Button>
+            </Grid>
+          </>
+        )}
       </Grid>
       <Routes>
-        <Route path="/" element={<Account />} />
+        <Route path="/" element={<DisplayRelationsPage />} />
         <Route path="/free" element={<FreeComponent />} />
         <Route
           path="update-relation"
           element={
             <ProtectedRoutes>
-              <UpdateRelationForm />
+              <UpdateRelationPage />
             </ProtectedRoutes>
           }
         />

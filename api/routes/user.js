@@ -93,6 +93,18 @@ router.get("/me", auth, async function (req, res) {
   }
 });
 
+router.get("/by-name/:name", async function (req, res) {
+  try {
+    const user = await getUserByName(req.params.name, req);
+
+    return res.status(200).send(user);
+  } catch (e) {
+    res.status(500).send({
+      message: e.message,
+    });
+  }
+});
+
 router.post("/verify", auth, async function (req, res) {
   try {
     const verify = await verifyPartner(

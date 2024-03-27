@@ -5,11 +5,11 @@ import { DisplayPartners } from "./DisplayPartners";
 import { Container } from "@mui/material";
 import { ValidateForm } from "./ValidateForm";
 
-export const UpdateRelationForm = () => {
+export const UpdateRelationPage = () => {
 
   return (
     <>
-      <DisplayPartners />
+      <DisplayPartners userName="First" />
       <ValidateForm />
     </>
   );

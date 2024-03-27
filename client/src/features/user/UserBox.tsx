@@ -2,10 +2,11 @@ import { Card } from "@mui/material";
 
 interface Props {
   name: string;
+  changeUser: (name: string) => void;
 }
-export const UserBox = ({ name }: Props) => {
+export const UserBox = ({ name, changeUser }: Props) => {
   return (
-    <Card >
+    <Card onClick={() => changeUser(name)}>
       {name? name : 'X'}
     </Card>
   );

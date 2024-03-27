@@ -56,6 +56,12 @@ export async function getMe(): Promise<User> {
   return response.data;
 }
 
+export async function getUserByName(name: string): Promise<User> {
+  const response = await axios.get<User>(`/user/by-name/${name}`);
+
+  return response.data;
+}
+
 export async function getPartners(name: string): Promise<Partner[]> {
   const response = await axios.get<Partner[]>(`/user/partners/${name}`);
 
