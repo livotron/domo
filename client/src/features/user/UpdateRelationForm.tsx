@@ -1,57 +1,25 @@
-import { FormEvent, useEffect, useState } from "react";
-import { loginUser, registerUser } from "./userApi";
 import { Form, Button, Col, Row, Container } from "react-bootstrap";
-import { Direction } from "./types";
-import { UserBox } from "./UserBox";
+import { Direction, Partner } from "./types";
+import { useSelector } from "react-redux";
+import { RootState } from "app/rootReducer";
+import { DisplayPartners } from "./DisplayPartners";
 
 export const UpdateRelationForm = () => {
-  const [name, setName] = useState<string>("");
-  const [partner, setPartner] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [registered, setRegistered] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const userName = useSelector((state: RootState) => state.user.user.name);
+  const partners = useSelector((state: RootState) => state.user.partners);
+  const sortedPartners = [
+    partners.find((partner) => partner.direction === Direction.up),
+    partners.find((partner) => partner.direction === Direction.right),
+    partners.find((partner) => partner.direction === Direction.down),
+    partners.find((partner) => partner.direction === Direction.left),
+  ];
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setRegistered(false);
-    setError("");
-    // try {
-    //   const res = await loginUser({ name, password });
-    //   console.log(res);
-    //   localStorage.setItem("TOKEN", res.token);
-    //   localStorage.setItem("TOKEN", res.token);
-    // } catch (e: any) {
-    //   console.error(e);
-    //   setError(e.response.data.message);
-    // }
-  };
-
-  useEffect(() => {
-    // me().then(({ name: userName }) => {
-    //   setName(userName);
-    // });
-  }, []);
   return (
     <Container>
-        <Row>
-          <Col></Col>
-          <Col>
-          <UserBox name="" />
-          </Col>
-          <Col></Col>
-        </Row>
-        <Row>
-          <Col><UserBox name={"name"} /></Col>
-          <Col><UserBox name={"name"} /></Col>
-          <Col><UserBox name={"name"} /></Col>
-        </Row>
-        <Row>
-          <Col></Col>
-          <Col>
-          <UserBox name="" />
-          </Col>
-          <Col></Col>
-        </Row>
+      <DisplayPartners />
+      <Row>
+        Some update relations stuff
+      </Row>
     </Container>
   );
 };

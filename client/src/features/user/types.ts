@@ -11,7 +11,7 @@ export enum Direction {
 }
 
 export type Partner = {
-  direction: ValidationRelation,
+  direction: Direction,
   user: User
 }
 
