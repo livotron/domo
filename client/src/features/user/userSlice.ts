@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { Direction, Partner, User } from "./types";
+import { Direction, Partner, User, VerifyUserProps } from "./types";
 import { AppDispatch, AppThunk } from "app/store";
-import { getMe, getPartners } from "./userApi";
+import { getMe, getPartners, verifyUser } from "./userApi";
 
 interface userSliceState {
   user: User,
@@ -39,6 +39,11 @@ export const fetchMe = (): AppThunk => async (dispatch: AppDispatch) => {
 
 export const fetchPartners = (): AppThunk => async (dispatch: AppDispatch, getState) => {
   const partners = await getPartners(getState().user.user.name);
+  dispatch(userSlice.actions.receivePartners(partners));
+}
+
+export const verifyCurrentUser = (props: VerifyUserProps): AppThunk => async (dispatch: AppDispatch, getState) => {
+  const partners = await verifyUser(props)
   dispatch(userSlice.actions.receivePartners(partners));
 }
 

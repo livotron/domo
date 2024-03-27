@@ -1,5 +1,6 @@
 import axios from "axios";
-import { Partner, User } from "./types";
+import { Partner, User, ValidationRelation, VerifyUserProps } from "./types";
+import { Direction } from "readline";
 
 export async function readUsers(): Promise<User> {
   const response = await axios.get<User>("/testAPI/", {
@@ -32,22 +33,22 @@ interface loginPayload {
   name: string;
   token: string;
 }
-export async function loginUser(User: User): Promise<loginPayload> {
-  const response = await axios.post<loginPayload>(
-    "/user/login-old",
-    {
-      name: User.name,
-      // password: User.password,
-    },
-    {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
-    }
-  );
+// export async function loginUser(User: User): Promise<loginPayload> {
+//   const response = await axios.post<loginPayload>(
+//     "/user/login-old",
+//     {
+//       name: User.name,
+//       // password: User.password,
+//     },
+//     {
+//       headers: {
+//         "Access-Control-Allow-Origin": "*",
+//       },
+//     }
+//   );
 
-  return response.data;
-}
+//   return response.data;
+// }
 
 export async function getMe(): Promise<User> {
   const response = await axios.get<User>("/user/me");
@@ -58,5 +59,25 @@ export async function getMe(): Promise<User> {
 export async function getPartners(name: string): Promise<Partner[]> {
   const response = await axios.get<Partner[]>(`/user/partners/${name}`);
 
+  return response.data;
+}
+
+interface loginPayload {
+  name: string;
+  token: string;
+}
+export async function loginUser(User: User): Promise<loginPayload> {
+  const response = await axios.post<loginPayload>("/user/login-old", {
+    name: User.name,
+    // password: User.password,
+  });
+
+  return response.data;
+}
+
+export async function verifyUser(
+  props: VerifyUserProps
+): Promise<Partner[]> {
+  const response = await axios.post<Partner[]>("/user/verify", { props });
   return response.data;
 }
