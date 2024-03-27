@@ -1,5 +1,4 @@
 import { FormEvent, useState } from "react";
-import { Button, Form } from "react-bootstrap";
 import { loginUser } from "./userApi";
 import { useNavigate } from "react-router-dom";
 
@@ -28,7 +27,7 @@ export const Login = () => {
   return (
     <>
       <h2>Login</h2>
-      <Form onSubmit={(e) => handleSubmit(e)}>
+      {/* <Form onSubmit={(e) => handleSubmit(e)}>
         <Form.Group controlId="formBasicName">
           <Form.Label>Name</Form.Label>
           <Form.Control
@@ -54,7 +53,7 @@ export const Login = () => {
         </Button>
         {login && <p className="textSuccess">You are logged in sucessfully</p>}
         {error && <p className="text-danger">{error}</p>}
-      </Form>
+      </Form> */}
     </>
   );
 };

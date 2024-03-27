@@ -5,7 +5,6 @@ import Footer from "features/visibilityFilter/Footer";
 import { useEffect } from "react";
 import { loadTodos } from "features/todoList/todoSlice";
 import { useAppDispatch } from "./store";
-import { Col, Container, Row } from "react-bootstrap";
 import { Register } from "features/user/Register";
 import { Login } from "features/user/Login";
 import { Link, Route, Routes } from "react-router-dom";
@@ -24,7 +23,7 @@ function App() {
   }, [dispatch])
   return (
     <>
-      <Row>
+      {/* <Row>
         <Col className="text-center">
           <h1>React Authentication Tutorial</h1>
 
@@ -35,7 +34,7 @@ function App() {
             <Link to="/auth">Auth Component</Link>
           </section>
         </Col>
-      </Row>
+      </Row> */}
       <Routes>
         <Route path="/" element={<Account />} />
         <Route path="/free" element={<FreeComponent />} />

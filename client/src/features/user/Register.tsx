@@ -1,5 +1,4 @@
 import { FormEvent, useState } from "react";
-import { Button, Form } from "react-bootstrap";
 import { registerUser } from "./userApi";
 
 export const Register = () => {
@@ -25,7 +24,7 @@ export const Register = () => {
   return (
     <>
       <h2>Register</h2>
-      <Form onSubmit={(e) => handleSubmit(e)}>
+      {/* <Form onSubmit={(e) => handleSubmit(e)}>
         <Form.Group controlId="formBasicName">
           <Form.Label>Name</Form.Label>
           <Form.Control
@@ -55,7 +54,7 @@ export const Register = () => {
         {error && (
           <p className="text-danger">{error}</p>
         )}
-      </Form>
+      </Form> */}
     </>
   );
 };
