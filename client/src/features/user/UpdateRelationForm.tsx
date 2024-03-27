@@ -7,12 +7,6 @@ import { DisplayPartners } from "./DisplayPartners";
 export const UpdateRelationForm = () => {
   const userName = useSelector((state: RootState) => state.user.user.name);
   const partners = useSelector((state: RootState) => state.user.partners);
-  const sortedPartners = [
-    partners.find((partner) => partner.direction === Direction.up),
-    partners.find((partner) => partner.direction === Direction.right),
-    partners.find((partner) => partner.direction === Direction.down),
-    partners.find((partner) => partner.direction === Direction.left),
-  ];
 
   return (
     <Container>

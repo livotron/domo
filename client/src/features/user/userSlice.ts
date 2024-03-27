@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { Partner, User } from "./types";
+import { Direction, Partner, User } from "./types";
 import { AppDispatch, AppThunk } from "app/store";
 import { getMe, getPartners } from "./userApi";
 
 interface userSliceState {
   user: User,
-  partners: Partner[]
+  partners: (Partner|undefined)[]
 } 
 
 const initialState: userSliceState = {
@@ -21,7 +21,12 @@ const userSlice = createSlice({
       state.user = action.payload;
     },
     receivePartners(state, action: PayloadAction<Partner[]>) {
-      state.partners = action.payload;
+      state.partners = [
+        action.payload.find((partner) => partner.direction === Direction.up),
+        action.payload.find((partner) => partner.direction === Direction.right),
+        action.payload.find((partner) => partner.direction === Direction.down),
+        action.payload.find((partner) => partner.direction === Direction.left),
+      ];;
     },
   }
 })
