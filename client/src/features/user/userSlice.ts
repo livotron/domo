@@ -42,7 +42,7 @@ export const fetchPartners = (): AppThunk => async (dispatch: AppDispatch, getSt
   dispatch(userSlice.actions.receivePartners(partners));
 }
 
-export const verifyCurrentUser = (props: VerifyUserProps): AppThunk => async (dispatch: AppDispatch, getState) => {
+export const verifyPartner = (props: VerifyUserProps): AppThunk => async (dispatch: AppDispatch, getState) => {
   const partners = await verifyUser(props)
   dispatch(userSlice.actions.receivePartners(partners));
 }

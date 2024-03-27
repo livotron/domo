@@ -21,7 +21,7 @@ export type ValidationRelation = {
 }
 
 export interface VerifyUserProps {
-  name: string;
+  partnerName: string;
   direction: Direction;
   hash: string;
 }

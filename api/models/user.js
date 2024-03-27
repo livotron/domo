@@ -231,7 +231,6 @@ export const verifyPartner = async (
         userName,
         partnerName,
         direction,
-        hash,
         sessionContext
       );
     }

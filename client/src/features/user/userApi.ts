@@ -78,6 +78,6 @@ export async function loginUser(User: User): Promise<loginPayload> {
 export async function verifyUser(
   props: VerifyUserProps
 ): Promise<Partner[]> {
-  const response = await axios.post<Partner[]>("/user/verify", { props });
+  const response = await axios.post<Partner[]>("/user/verify", { ...props });
   return response.data;
 }
