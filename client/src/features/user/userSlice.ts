@@ -23,7 +23,7 @@ const userSlice = createSlice({
       state.me = action.payload;
     },
     removeMe(state) {
-      state.me = { name: "" };
+      return initialState
     },
     receiveUser(state, action: PayloadAction<User>) {
       state.user = action.payload;
