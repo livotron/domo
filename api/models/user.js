@@ -265,7 +265,7 @@ export const checkVerifications = async (
   const confirmations = verifications.map((verif) => {
     const partnersVerification = partnersVerifications.find(
       (pv) =>
-        pv.user.name === verif.name &&
+        pv.user.name === verif.partnerName &&
         pv.verification.direction ===
         getOppositeDirection(verif.direction) &&
         pv.verification.hash === verif.hash

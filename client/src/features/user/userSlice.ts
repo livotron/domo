@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Direction, Partner, User, VerifyUserProps } from "./types";
+import { Direction, LoginUserProps, Partner, User, VerifyUserProps } from "./types";
 import { AppDispatch, AppThunk } from "app/store";
-import { getMe, getPartners, getUserByName, verifyUser } from "./userApi";
+import { getMe, getPartners, getUserByName, loginUser, verifyUser } from "./userApi";
 
 interface userSliceState {
   user: User;
@@ -23,7 +23,7 @@ const userSlice = createSlice({
       state.me = action.payload;
     },
     removeMe(state) {
-      state.me = {name: ''};
+      state.me = { name: "" };
     },
     receiveUser(state, action: PayloadAction<User>) {
       state.user = action.payload;
@@ -42,14 +42,14 @@ const userSlice = createSlice({
 export const fetchMe = (): AppThunk => async (dispatch: AppDispatch) => {
   const myUser = await getMe();
   dispatch(userSlice.actions.receiveMe(myUser));
-  dispatch(fetchPartners());
 };
 
-export const fetchByName = (name: string): AppThunk => async (dispatch: AppDispatch) => {
-  const user = await getUserByName(name);
-  dispatch(userSlice.actions.receiveUser(user));
-  dispatch(fetchPartners());
-};
+export const fetchByName =
+  (name: string): AppThunk =>
+  async (dispatch: AppDispatch) => {
+    const user = await getUserByName(name);
+    dispatch(userSlice.actions.receiveUser(user));
+  };
 
 export const fetchPartners =
   (): AppThunk => async (dispatch: AppDispatch, getState) => {
@@ -64,6 +64,15 @@ export const verifyPartner =
     dispatch(userSlice.actions.receivePartners(partners));
   };
 
-export const { removeMe } = userSlice.actions
+export const login =
+  (props: LoginUserProps): AppThunk =>
+  async (dispatch: AppDispatch, getState) => {
+    const loginResponse = await loginUser(props);
+    localStorage.setItem('TOKEN',loginResponse.token)
+    dispatch(fetchMe());
+    dispatch(userSlice.actions.receivePartners(loginResponse.partners));
+  };
+
+export const { removeMe, receiveUser } = userSlice.actions;
 
 export default userSlice.reducer;

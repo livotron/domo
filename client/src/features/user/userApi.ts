@@ -1,5 +1,10 @@
 import axios from "axios";
-import { Partner, User, ValidationRelation, VerifyUserProps } from "./types";
+import {
+  LoginUserProps,
+  Partner,
+  User,
+  VerifyUserProps,
+} from "./types";
 import { Direction } from "readline";
 
 export async function readUsers(): Promise<User> {
@@ -81,10 +86,17 @@ export async function getPartners(name: string): Promise<Partner[]> {
 //   return response.data;
 // }
 
-export async function verifyUser(
-  props: VerifyUserProps
-): Promise<Partner[]> {
+export async function verifyUser(props: VerifyUserProps): Promise<Partner[]> {
   const response = await axios.post<Partner[]>("/user/verify", { ...props });
   return response.data;
 }
- 
+
+interface loginPayload {
+  partners: Partner[];
+  token: string;
+}
+
+export async function loginUser(props: LoginUserProps): Promise<loginPayload> {
+  const response = await axios.post<loginPayload>("/user/login", {...props});
+  return response.data;
+}

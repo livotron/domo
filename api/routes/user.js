@@ -150,14 +150,14 @@ router.post("/login", async function (req, res) {
         const results = await memo;
         await verifyExistingUser(
           name,
-          verification.name,
+          verification.partnerName,
           verification.direction,
           verification.hash,
           req
         );
         const supportRelation = await createSupportRelations(
           name,
-          verification.name,
+          verification.partnerName,
           verification.direction,
           req
         );

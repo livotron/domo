@@ -2,13 +2,14 @@ import {
   Box,
   Button,
   FormControl,
-  FormLabel,
   TextField,
   Typography,
 } from "@mui/material";
 import { DisplayPartners } from "./DisplayPartners";
 import { ChangeEvent, MouseEvent, useState } from "react";
-import { Direction, LoginUserClient, VerifyUserClient } from "./types";
+import { Direction, VerifyUserClient } from "./types";
+import { useAppDispatch } from "app/store";
+import { login } from "./userSlice";
 
 export const LoginPage = () => {
   const [userName, setUserName] = useState<string>("");
@@ -75,8 +76,18 @@ export const LoginPage = () => {
         break;
     }
   };
+  const dispatch = useAppDispatch();
   const handleSubmit = (e: MouseEvent) => {
     e.preventDefault();
+    const filledLoginEntitys = loginState.filter(
+      (logEnt) => logEnt.partnerName && logEnt.password
+    );
+    const loginProps = filledLoginEntitys.map((logEnt) => ({
+      direction: logEnt.direction,
+      partnerName: logEnt.partnerName,
+      hash: logEnt.password,
+    }));
+    dispatch(login({ verifications: loginProps, name: userName }));
   };
   return (
     <>
@@ -102,7 +113,11 @@ export const LoginPage = () => {
               variant="outlined"
               value={loginEntity.partnerName}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                setPartnerField(event.target.value, loginEntity.direction, false)
+                setPartnerField(
+                  event.target.value,
+                  loginEntity.direction,
+                  false
+                )
               }
             />
             <TextField

@@ -38,6 +38,6 @@ export interface VerifyUserClient {
 }
 
 export interface LoginUserClient {
-  name: string;
+  token: string;
   verifications: VerifyUserClient[];
 }
