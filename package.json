@@ -10,6 +10,8 @@
     "heroku-postbuild": "cd client && yarn install && yarn run build"
   },
   "dependencies": {
+    "@fontsource/roboto": "^5.0.12",
+    "@mui/icons-material": "^5.15.14",
     "@mui/material": "^5.15.14",
     "@mui/styled-engine-sc": "^6.0.0-alpha.18",
     "concurrently": "^8.2.2",
