@@ -18,6 +18,7 @@ import { Button, Container, Grid } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "./rootReducer";
 import { DisplayRelationsPage } from "features/user/DisplayRelationsPage";
+import { LoginPage } from "features/user/LoginPage";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -37,7 +38,7 @@ function App() {
   };
   return (
     <Container>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} paddingY={2}>
         <Grid xs={1} item>
           Д
         </Grid>
@@ -48,7 +49,7 @@ function App() {
           <Link to="/update-relation">Update Relation</Link>
         </Grid>
         <Grid xs={2} item>
-          <Link to="/free">Free Component</Link>
+          <Link to="/login">Login</Link>
         </Grid>
         <Grid xs={2} item>
           <Link to="/auth">Auth Component</Link>
@@ -72,7 +73,7 @@ function App() {
       </Grid>
       <Routes>
         <Route path="/" element={<DisplayRelationsPage />} />
-        <Route path="/free" element={<FreeComponent />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route
           path="update-relation"
           element={

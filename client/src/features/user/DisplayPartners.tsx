@@ -1,5 +1,4 @@
 import { FormEvent, useEffect, useState } from "react";
-import { loginUser, registerUser } from "./userApi";
 import { Direction, Partner } from "./types";
 import { UserBox } from "./UserBox";
 import { useSelector } from "react-redux";
@@ -12,19 +11,18 @@ const getPartnerName = (partner: Partner | undefined) => {
   return partner ? partner.user.name : "X";
 };
 
-interface Props {
-  userName: string;
-}
-
-export const DisplayPartners = ({ userName }: Props) => {
+export const DisplayPartners = () => {
   const partners = useSelector((state: RootState) => state.user.partners);
+  const userName = useSelector((state: RootState) => state.user.user.name);
+
   const dispatch = useAppDispatch(); 
 
   const changeUser = (name: string) => {
     dispatch(fetchByName(name));
   }
   return (
-    <Grid container spacing={8} justifyContent="center">
+    <div>
+    <Grid container marginY={0} spacing={2} alignItems="center" justifyContent="center">
       <Grid item xs={4}></Grid>
       <Grid item xs={4}>
         <UserBox changeUser={changeUser} name={getPartnerName(partners[0])} />
@@ -45,32 +43,6 @@ export const DisplayPartners = ({ userName }: Props) => {
       </Grid>
       <Grid item xs={4}></Grid>
     </Grid>
-    // <Container>
-    //   <Row>
-    //     <Col></Col>
-    //     <Col>
-    //       <UserBox name={getPartnerName(partners[0])} />
-    //     </Col>
-    //     <Col></Col>
-    //   </Row>
-    //   <Row>
-    //     <Col>
-    //       <UserBox name={getPartnerName(partners[3])} />
-    //     </Col>
-    //     <Col>
-    //       <UserBox name={userName} />
-    //     </Col>
-    //     <Col>
-    //       <UserBox name={getPartnerName(partners[1])} />
-    //     </Col>
-    //   </Row>
-    //   <Row>
-    //     <Col></Col>
-    //     <Col>
-    //       <UserBox name={getPartnerName(partners[2])} />
-    //     </Col>
-    //     <Col></Col>
-    //   </Row>
-    // </Container>
+    </div>
   );
 };

@@ -9,7 +9,7 @@ export const UpdateRelationPage = () => {
 
   return (
     <>
-      <DisplayPartners userName="First" />
+      <DisplayPartners />
       <ValidateForm />
     </>
   );

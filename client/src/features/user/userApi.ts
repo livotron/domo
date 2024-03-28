@@ -68,18 +68,18 @@ export async function getPartners(name: string): Promise<Partner[]> {
   return response.data;
 }
 
-interface loginPayload {
-  name: string;
-  token: string;
-}
-export async function loginUser(User: User): Promise<loginPayload> {
-  const response = await axios.post<loginPayload>("/user/login-old", {
-    name: User.name,
-    // password: User.password,
-  });
+// interface loginPayload {
+//   name: string;
+//   token: string;
+// }
+// export async function loginUser(User: User): Promise<loginPayload> {
+//   const response = await axios.post<loginPayload>("/user/login-old", {
+//     name: User.name,
+//     // password: User.password,
+//   });
 
-  return response.data;
-}
+//   return response.data;
+// }
 
 export async function verifyUser(
   props: VerifyUserProps
@@ -87,3 +87,4 @@ export async function verifyUser(
   const response = await axios.post<Partner[]>("/user/verify", { ...props });
   return response.data;
 }
+ 

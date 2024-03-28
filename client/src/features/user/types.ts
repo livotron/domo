@@ -25,3 +25,19 @@ export interface VerifyUserProps {
   direction: Direction;
   hash: string;
 }
+
+export interface LoginUserProps {
+  name: string;
+  verifications: VerifyUserProps[];
+}
+
+export interface VerifyUserClient {
+  partnerName: string;
+  direction: Direction;
+  password: string;
+}
+
+export interface LoginUserClient {
+  name: string;
+  verifications: VerifyUserClient[];
+}

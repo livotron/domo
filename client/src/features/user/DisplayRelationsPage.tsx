@@ -9,7 +9,6 @@ import { RootState } from "app/rootReducer";
 export const DisplayRelationsPage = () => {
   const dispatch = useAppDispatch();
   const [ searchedUser, setSearchedUser ] = useState<string>("");
-  const fetchedUserName = useSelector((state: RootState) => state.user.user.name)
   // useEffect(() => {
   //   dispatch(fetchByName("First"));
   // }, []);
@@ -21,7 +20,7 @@ export const DisplayRelationsPage = () => {
   }
   return (
     <>
-      <DisplayPartners userName={fetchedUserName} />
+      <DisplayPartners />
       <TextField
         required
         id="search-user"

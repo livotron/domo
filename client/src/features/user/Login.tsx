@@ -1,5 +1,4 @@
 import { FormEvent, useState } from "react";
-import { loginUser } from "./userApi";
 import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
