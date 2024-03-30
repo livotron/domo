@@ -1,18 +1,17 @@
-import {
-  Box,
-  Button,
-  FormControl,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, FormControl, TextField, Typography } from "@mui/material";
 import { DisplayPartners } from "./DisplayPartners";
 import { ChangeEvent, MouseEvent, useState } from "react";
 import { Direction, VerifyUserClient } from "./types";
 import { useAppDispatch } from "app/store";
 import { login } from "./userSlice";
+import { useSelector } from "react-redux";
+import { RootState } from "app/rootReducer";
 
-export const LoginPage = () => {
-  const [userName, setUserName] = useState<string>("");
+export const VerifiedLogin = () => {
+  // const [userName, setUserName] = useState<string>("");
+  const userName = useSelector((state: RootState) => state.user.user.name);
+  const partners = useSelector((state: RootState) => state.user.partners);
+
   const [loginState, setLoginState] = useState<VerifyUserClient[]>([
     { partnerName: "", password: "", direction: Direction.up },
     { partnerName: "", password: "", direction: Direction.right },
@@ -91,9 +90,8 @@ export const LoginPage = () => {
   };
   return (
     <>
-      <DisplayPartners />
       <FormControl>
-        <TextField
+        {/* <TextField
           required
           id="username"
           label="User Name"
@@ -102,12 +100,11 @@ export const LoginPage = () => {
           onChange={(event: ChangeEvent<HTMLInputElement>) =>
             setUserName(event.target.value)
           }
-        />
-        {loginState.map((loginEntity) => (
-          <Box key={loginEntity.direction}>
+        /> */}
+        {loginState.map((loginEntity, index) => (
+          <Box style={{ display: partners[index] ? "block" :"none" }} key={loginEntity.direction}>
             <Typography variant="h3">{loginEntity.direction}</Typography>
             <TextField
-              required
               id={`partner-name-${loginEntity.direction}`}
               label="Partner Name"
               variant="outlined"

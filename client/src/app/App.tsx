@@ -18,7 +18,7 @@ import { Button, Container, Grid } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "./rootReducer";
 import { DisplayRelationsPage } from "features/user/DisplayRelationsPage";
-import { LoginPage } from "features/user/LoginPage";
+import { VerifiedLogin } from "features/user/VerifiedLogin";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -73,7 +73,7 @@ function App() {
       </Grid>
       <Routes>
         <Route path="/" element={<DisplayRelationsPage />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/login" element={<VerifiedLogin />} />
         <Route
           path="update-relation"
           element={

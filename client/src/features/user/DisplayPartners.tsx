@@ -49,7 +49,7 @@ export const DisplayPartners = () => {
           <UserBox changeUser={changeUser} name={getPartnerName(partners[3])} />
         </Grid>
         <Grid item xs={4}>
-          <UserBox changeUser={changeUser} name={userName} />
+          <UserBox central changeUser={changeUser} name={userName} />
         </Grid>
         <Grid item xs={4}>
           <UserBox changeUser={changeUser} name={getPartnerName(partners[1])} />

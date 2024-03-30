@@ -22,7 +22,7 @@ const userSlice = createSlice({
     receiveMe(state, action: PayloadAction<User>) {
       state.me = action.payload;
     },
-    removeMe(state) {
+    removeMe() {
       return initialState
     },
     receiveUser(state, action: PayloadAction<User>) {
@@ -59,14 +59,14 @@ export const fetchPartners =
 
 export const verifyPartner =
   (props: VerifyUserProps): AppThunk =>
-  async (dispatch: AppDispatch, getState) => {
+  async (dispatch: AppDispatch) => {
     const partners = await verifyUser(props);
     dispatch(userSlice.actions.receivePartners(partners));
   };
 
 export const login =
   (props: LoginUserProps): AppThunk =>
-  async (dispatch: AppDispatch, getState) => {
+  async (dispatch: AppDispatch) => {
     const loginResponse = await loginUser(props);
     localStorage.setItem('TOKEN',loginResponse.token)
     dispatch(fetchMe());

@@ -2,17 +2,18 @@ import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import { DisplayPartners } from "./DisplayPartners";
 import { useAppDispatch } from "app/store";
 import { fetchByName, fetchMe, receiveUser } from "./userSlice";
-import { Button, TextField } from "@mui/material";
+import { Button, FormControlLabel, Switch, TextField } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "app/rootReducer";
+import { FixedRelationsMenu } from "./FixedRelationsMenu";
+import { Login } from "./Login";
 
 export const DisplayRelationsPage = () => {
   const dispatch = useAppDispatch();
   const [searchedUser, setSearchedUser] = useState<string>("");
-  // useEffect(() => {
-  //   dispatch(fetchByName("First"));
-  // }, []);
+  const [isFixed, setIsFixed] = useState<boolean>(false);
   const me = useSelector((state: RootState) => state.user.me);
+  const centralUser = useSelector((state: RootState) => state.user.user);
 
   const handleSearch = (e: MouseEvent) => {
     e.preventDefault();
@@ -36,12 +37,28 @@ export const DisplayRelationsPage = () => {
         }
       />
       <Button variant="contained" onClick={(e: MouseEvent) => handleSearch(e)}>
-        Search
+        Шукати
       </Button>
-      <Button disabled={!me.name} variant="contained" onClick={(e: MouseEvent) => handleMeClicked(e)}>
+      <Button
+        disabled={!me.name}
+        variant="contained"
+        onClick={(e: MouseEvent) => handleMeClicked(e)}
+      >
         Я
       </Button>
       <DisplayPartners />
+      {centralUser.name && (
+        <>
+          <FormControlLabel
+            style={{ userSelect: "none" }}
+            control={
+              <Switch checked={isFixed} onClick={() => setIsFixed(!isFixed)} />
+            }
+            label="ЗАФІКСУВАТИ"
+          />
+          {isFixed && (me.name ? <FixedRelationsMenu /> : <Login />)}
+        </>
+      )}
     </>
   );
 };
