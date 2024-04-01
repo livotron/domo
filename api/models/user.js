@@ -13,6 +13,20 @@ export const getUserByName = async (name, sessionContext) => {
   return checkupQuery.records[0].get("user").properties;
 };
 
+export const searchUserByName = async (nameStart, sessionContext) => {
+  const session = getSession(sessionContext);
+  const checkupQuery = await session.executeRead((tx) => {
+    return tx.run(`Match (u:User)
+    WHERE u.name STARTS WITH '${nameStart}'
+    RETURN u as user
+    ORDER BY u.name`);
+  });
+  if (!checkupQuery.records.length) {
+    return null;
+  }
+  return checkupQuery.records.map(rec => rec.get("user").properties);
+};
+
 export const mergeUser = async (name, password, sessionContext) => {
   const session = getSession(sessionContext);
 

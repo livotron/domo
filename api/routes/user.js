@@ -9,6 +9,7 @@ import {
   getPartners,
   getUserByName,
   mergeUser,
+  searchUserByName,
   verifyExistingUser,
   verifyPartner,
 } from "../models/user.js";
@@ -105,6 +106,21 @@ router.get("/by-name/:name", async function (req, res) {
   }
 });
 
+router.get("/search-by-name/:name", async function (req, res) {
+  try {
+    if (req.params.name.length < 3) {
+      return res.status(400).send({ message: "Minimum 3 letters required" });
+    }
+    const user = await searchUserByName(req.params.name, req);
+
+    return res.status(200).send(user);
+  } catch (e) {
+    res.status(500).send({
+      message: e.message,
+    });
+  }
+});
+
 router.post("/verify", auth, async function (req, res) {
   try {
     const verify = await verifyPartner(
@@ -172,7 +188,7 @@ router.post("/login", async function (req, res) {
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
     );
-    return res.send({ partners: supportRelations, token});
+    return res.send({ partners: supportRelations, token });
   } catch (error) {
     res.status(500).send({
       message: error.message,
