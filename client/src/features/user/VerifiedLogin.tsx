@@ -13,24 +13,35 @@ export const VerifiedLogin = () => {
   const partners = useSelector((state: RootState) => state.user.partners);
 
   const [loginState, setLoginState] = useState<VerifyUserClient[]>([
-    { partnerName: "", password: "", direction: Direction.up },
-    { partnerName: "", password: "", direction: Direction.right },
-    { partnerName: "", password: "", direction: Direction.down },
-    { partnerName: "", password: "", direction: Direction.left },
+    {
+      partnerName: partners[0]?.user.name || "",
+      password: "",
+      direction: Direction.up,
+    },
+    {
+      partnerName: partners[1]?.user.name || "",
+      password: "",
+      direction: Direction.right,
+    },
+    {
+      partnerName: partners[2]?.user.name || "",
+      password: "",
+      direction: Direction.down,
+    },
+    {
+      partnerName: partners[3]?.user.name || "",
+      password: "",
+      direction: Direction.left,
+    },
   ]);
 
-  const setPartnerField = (
-    value: string,
-    direction: Direction,
-    isPassword: boolean
-  ) => {
+  const setPartnerField = (value: string, direction: Direction) => {
     switch (direction) {
       case Direction.up:
         setLoginState([
           {
-            direction: loginState[0].direction,
-            partnerName: isPassword ? loginState[0].partnerName : value,
-            password: isPassword ? value : loginState[0].password,
+            ...loginState[0],
+            password: value,
           },
           loginState[1],
           loginState[2],
@@ -41,9 +52,8 @@ export const VerifiedLogin = () => {
         setLoginState([
           loginState[0],
           {
-            direction: loginState[1].direction,
-            partnerName: isPassword ? loginState[1].partnerName : value,
-            password: isPassword ? value : loginState[1].password,
+            ...loginState[1],
+            password: value,
           },
           loginState[2],
           loginState[3],
@@ -54,9 +64,8 @@ export const VerifiedLogin = () => {
           loginState[0],
           loginState[1],
           {
-            direction: loginState[2].direction,
-            partnerName: isPassword ? loginState[2].partnerName : value,
-            password: isPassword ? value : loginState[2].password,
+            ...loginState[2],
+            password: value,
           },
           loginState[3],
         ]);
@@ -67,9 +76,8 @@ export const VerifiedLogin = () => {
           loginState[1],
           loginState[2],
           {
-            direction: loginState[3].direction,
-            partnerName: isPassword ? loginState[3].partnerName : value,
-            password: isPassword ? value : loginState[3].password,
+            ...loginState[3],
+            password: value,
           },
         ]);
         break;
@@ -102,13 +110,17 @@ export const VerifiedLogin = () => {
           }
         /> */}
         {loginState.map((loginEntity, index) => (
-          <Box style={{ display: partners[index] ? "block" :"none" }} key={loginEntity.direction}>
-            <Typography variant="h3">{loginEntity.direction}</Typography>
-            <TextField
+          <Box
+            style={{ display: partners[index] ? "block" : "none" }}
+            key={loginEntity.direction}
+          >
+            <Typography variant="subtitle1">{`${partners[index]?.user.name}`}</Typography>
+            {/* <TextField
               id={`partner-name-${loginEntity.direction}`}
               label="Partner Name"
               variant="outlined"
-              value={loginEntity.partnerName}
+              disabled
+              value={partners[index]?.user.name}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
                 setPartnerField(
                   event.target.value,
@@ -116,7 +128,7 @@ export const VerifiedLogin = () => {
                   false
                 )
               }
-            />
+            /> */}
             <TextField
               required
               id={`partner-password-${loginEntity.direction}`}
@@ -124,7 +136,7 @@ export const VerifiedLogin = () => {
               variant="outlined"
               value={loginEntity.password}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                setPartnerField(event.target.value, loginEntity.direction, true)
+                setPartnerField(event.target.value, loginEntity.direction)
               }
             />
           </Box>

@@ -41,3 +41,16 @@ export interface LoginUserClient {
   token: string;
   verifications: VerifyUserClient[];
 }
+
+export const getOppositeDirection = (direction: Direction) => {
+  switch (direction) {
+    case Direction.up:
+      return Direction.down;
+    case Direction.right:
+      return Direction.left;
+    case Direction.down:
+      return Direction.up;
+    case Direction.left:
+      return Direction.right;
+  }
+};

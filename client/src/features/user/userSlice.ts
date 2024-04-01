@@ -68,7 +68,8 @@ export const login =
   (props: LoginUserProps): AppThunk =>
   async (dispatch: AppDispatch) => {
     const loginResponse = await loginUser(props);
-    localStorage.setItem('TOKEN',loginResponse.token)
+    localStorage.setItem('TOKEN',loginResponse.token);
+    dispatch(receiveUser({name: props.name}))
     dispatch(fetchMe());
     dispatch(userSlice.actions.receivePartners(loginResponse.partners));
   };
