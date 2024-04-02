@@ -20,6 +20,8 @@ interface userSliceState {
   me: User;
   partners: (Partner | undefined)[];
   isFixed: boolean;
+  loginError: boolean;
+  loginLoading: boolean;
 }
 
 const initialState: userSliceState = {
@@ -27,6 +29,8 @@ const initialState: userSliceState = {
   me: { name: "" },
   partners: [],
   isFixed: false,
+  loginError: false,
+  loginLoading: false,
 };
 
 const userSlice = createSlice({
@@ -52,6 +56,17 @@ const userSlice = createSlice({
     },
     toggleIsFixed(state) {
       state.isFixed = !state.isFixed;
+    },
+    loginPending(state) {
+      state.loginError = false;
+      state.loginLoading = true;
+    },
+    loginRejected(state) {
+      state.loginError = true;
+      state.loginLoading = false;
+    },
+    loginFulfilled(state) {
+      state.loginLoading = false;
     },
   },
 });
@@ -85,13 +100,16 @@ export const login =
   (props: LoginUserProps): AppThunk =>
   async (dispatch: AppDispatch) => {
     try {
+      dispatch(userSlice.actions.loginPending());
       const loginResponse = await loginUser(props);
       localStorage.setItem("TOKEN", loginResponse.token);
       dispatch(receiveUser({ name: props.name }));
       dispatch(fetchMe());
+      dispatch(userSlice.actions.loginFulfilled());
       dispatch(userSlice.actions.receivePartners(loginResponse.partners));
     } catch (e) {
-      console.log(e)
+      dispatch(userSlice.actions.loginRejected());
+      console.log(e);
     }
   };
 

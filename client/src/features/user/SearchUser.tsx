@@ -6,7 +6,7 @@ import { useAppDispatch } from "app/store";
 import { fetchByName } from "./userSlice";
 
 interface Props {
-  getSearchedUser: (user: string) => void;
+  getSearchedUser: (user: string | null) => void;
 }
 export const SearchUser = ({ getSearchedUser }: Props) => {
   const [options, setOptions] = useState<string[]>([]);
@@ -31,7 +31,7 @@ export const SearchUser = ({ getSearchedUser }: Props) => {
   };
   const handleValueChange = (newValue: string | null) => {
     setValue(newValue);
-    if (newValue) getSearchedUser(newValue);
+    getSearchedUser(newValue);
   };
 
   return (
@@ -47,11 +47,13 @@ export const SearchUser = ({ getSearchedUser }: Props) => {
           handleValueChange(newValue);
         }}
         noOptionsText={
-          loading
-            ? "ЗАГРУЗКА"
-            : inputValue.length < 3
-              ? "ПРОДОВЖУЙТЕ ВВІД"
-              : "НЕ ЗНАЙДЕНО"
+          inputValue
+            ? loading
+              ? "ЗАГРУЗКА"
+              : inputValue.length < 3
+                ? "ПРОДОВЖУЙТЕ ВВІД"
+                : "НЕ ЗНАЙДЕНО"
+            : "ВВЕДІТЬ ІМ'Я"
         }
         inputValue={inputValue}
         onInputChange={(event, newInputValue) => {

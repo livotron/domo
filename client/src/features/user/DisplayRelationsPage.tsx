@@ -14,9 +14,8 @@ export const DisplayRelationsPage = () => {
 
   const me = useSelector((state: RootState) => state.user.me);
   const centralUser = useSelector((state: RootState) => state.user.user);
-  const isFixed = useSelector((state: RootState) => state.user.isFixed); 
-  const handleSearch = (searchedUser: string) => {
-    dispatch(fetchByName(searchedUser));
+  const handleSearch = (searchedUser: string | null) => {
+    if (searchedUser) dispatch(fetchByName(searchedUser));
   };
 
   const handleMeClicked = (e: MouseEvent) => {
@@ -38,7 +37,7 @@ export const DisplayRelationsPage = () => {
       <Button variant="contained" onClick={(e: MouseEvent) => handleSearch(e)}>
         Шукати
       </Button> */}
-      <SearchUser getSearchedUser={handleSearch}/>
+      <SearchUser getSearchedUser={handleSearch} />
       <Button
         disabled={!me.name}
         variant="contained"
@@ -47,18 +46,8 @@ export const DisplayRelationsPage = () => {
         Я
       </Button>
       <DisplayPartners />
-      {centralUser.name && (
-        <>
-          <FormControlLabel
-            style={{ userSelect: "none" }}
-            control={
-              <Switch value={isFixed} checked={isFixed} onClick={() => dispatch(toggleIsFixed())} />
-            }
-            label="ЗАФІКСУВАТИ"
-          />
-          {isFixed && (me.name ? <FixedRelationsMenu /> : <Login />)}
-        </>
-      )}
+
+      {centralUser.name && (me.name ? <FixedRelationsMenu /> : <Login />)}
     </>
   );
 };

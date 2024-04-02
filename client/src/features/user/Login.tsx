@@ -15,25 +15,10 @@ export const Login = () => {
     setIsNewUser(value);
   };
 
-  if (partners[0] && partners[1] && partners[2] && partners[3]) {
-    return <VerifiedLogin />
+  if (!partners[0] && !partners[1] && !partners[2] && !partners[3]) {
+    return <NewUserLogin />
   }
   return (
-    <>
-      <Typography>ЗАФІКСОВАНО НАСТУПНУ ОСОБУ:</Typography>
-      <RadioGroup
-        aria-labelledby="demo-radio-buttons-group-label"
-        defaultValue="female"
-        name="radio-buttons-group"
-        value={isNewUser}
-        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-          handleRadioChange(e.target.value)
-        }
-      >
-        <FormControlLabel value="false" control={<Radio />} label="Я" />
-        <FormControlLabel value="true" control={<Radio />} label="РЕКРУТЕР" />
-      </RadioGroup>
-      {isNewUser ? <NewUserLogin  /> : <VerifiedLogin />}
-    </>
+    <VerifiedLogin />
   );
 };
