@@ -18,7 +18,7 @@ import {
 interface userSliceState {
   user: User;
   me: User;
-  partners: (Partner | undefined)[];
+  partners: User[];
   isFixed: boolean;
   loginError: boolean;
   loginLoading: boolean;
@@ -27,7 +27,7 @@ interface userSliceState {
 const initialState: userSliceState = {
   user: { name: "" },
   me: { name: "" },
-  partners: [],
+  partners: [{ name: "" }, { name: "" }, { name: "" }, { name: "" }],
   isFixed: false,
   loginError: false,
   loginLoading: false,
@@ -48,10 +48,14 @@ const userSlice = createSlice({
     },
     receivePartners(state, action: PayloadAction<Partner[]>) {
       state.partners = [
-        action.payload.find((partner) => partner.direction === Direction.up),
-        action.payload.find((partner) => partner.direction === Direction.right),
-        action.payload.find((partner) => partner.direction === Direction.down),
-        action.payload.find((partner) => partner.direction === Direction.left),
+        action.payload.find((partner) => partner.direction === Direction.up)
+          ?.user || { name: "" },
+        action.payload.find((partner) => partner.direction === Direction.right)
+          ?.user || { name: "" },
+        action.payload.find((partner) => partner.direction === Direction.down)
+          ?.user || { name: "" },
+        action.payload.find((partner) => partner.direction === Direction.left)
+          ?.user || { name: "" },
       ];
     },
     toggleIsFixed(state) {
@@ -106,7 +110,7 @@ export const login =
       dispatch(receiveUser({ name: props.name }));
       dispatch(fetchMe());
       dispatch(userSlice.actions.loginFulfilled());
-      dispatch(userSlice.actions.receivePartners(loginResponse.partners));
+      // dispatch(userSlice.actions.receivePartners(loginResponse.partners));
     } catch (e) {
       dispatch(userSlice.actions.loginRejected());
       console.log(e);

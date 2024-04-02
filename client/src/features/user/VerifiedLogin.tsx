@@ -1,142 +1,84 @@
 import { Box, Button, FormControl, TextField, Typography } from "@mui/material";
 import { DisplayPartners } from "./DisplayPartners";
-import { ChangeEvent, MouseEvent, useState } from "react";
+import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import { Direction, VerifyUserClient } from "./types";
 import { useAppDispatch } from "app/store";
 import { login } from "./userSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "app/rootReducer";
 
+const getDirectionFromIndex = (index: number) => {
+  switch (index) {
+    case 0:
+      return Direction.up;
+    case 1:
+      return Direction.right;
+    case 2:
+      return Direction.down;
+    case 3:
+      return Direction.left;
+    default:
+      return Direction.up;
+  }
+};
+
 export const VerifiedLogin = () => {
   // const [userName, setUserName] = useState<string>("");
-  const userName = useSelector((state: RootState) => state.user.user.name);
+  const { user, loginError, loginLoading } = useSelector(
+    (state: RootState) => state.user
+  );
   const partners = useSelector((state: RootState) => state.user.partners);
-
-  const [loginState, setLoginState] = useState<VerifyUserClient[]>([
-    {
-      partnerName: partners[0]?.user.name || "",
-      password: "",
-      direction: Direction.up,
-    },
-    {
-      partnerName: partners[1]?.user.name || "",
-      password: "",
-      direction: Direction.right,
-    },
-    {
-      partnerName: partners[2]?.user.name || "",
-      password: "",
-      direction: Direction.down,
-    },
-    {
-      partnerName: partners[3]?.user.name || "",
-      password: "",
-      direction: Direction.left,
-    },
-  ]);
-
-  const setPartnerField = (value: string, direction: Direction) => {
-    switch (direction) {
-      case Direction.up:
-        setLoginState([
-          {
-            ...loginState[0],
-            password: value,
-          },
-          loginState[1],
-          loginState[2],
-          loginState[3],
-        ]);
-        break;
-      case Direction.right:
-        setLoginState([
-          loginState[0],
-          {
-            ...loginState[1],
-            password: value,
-          },
-          loginState[2],
-          loginState[3],
-        ]);
-        break;
-      case Direction.down:
-        setLoginState([
-          loginState[0],
-          loginState[1],
-          {
-            ...loginState[2],
-            password: value,
-          },
-          loginState[3],
-        ]);
-        break;
-      case Direction.left:
-        setLoginState([
-          loginState[0],
-          loginState[1],
-          loginState[2],
-          {
-            ...loginState[3],
-            password: value,
-          },
-        ]);
-        break;
+  const [confirmProhibited, setConfirmProhibited] = useState(false);
+  const [passwords, setPasswords] = useState<string[]>(["", "", "", ""]);
+  const merged = partners.map((par, index) => ({
+    ...par,
+    password: passwords[index],
+    direction: getDirectionFromIndex(index),
+  }));
+  const filtered = merged.filter((val) => val.name);
+  const passwordFilled = filtered.reduce((prev, curr) => {
+    if (!curr.password) {
+      return false;
     }
+    return prev;
+  }, true);
+  const setPassword = (value: string, index: number) => {
+    const newPasswords = [...passwords];
+    newPasswords[index] = value;
+    setConfirmProhibited(false);
+    setPasswords(newPasswords);
   };
+
+  useEffect(() => {
+    if (loginError) setConfirmProhibited(true);
+  }, [loginError]);
+
   const dispatch = useAppDispatch();
   const handleSubmit = (e: MouseEvent) => {
     e.preventDefault();
-    const filledLoginEntitys = loginState.filter(
-      (logEnt) => logEnt.partnerName && logEnt.password
-    );
-    const loginProps = filledLoginEntitys.map((logEnt) => ({
+    const loginProps = filtered.map((logEnt) => ({
       direction: logEnt.direction,
-      partnerName: logEnt.partnerName,
+      partnerName: logEnt.name,
       hash: logEnt.password,
     }));
-    dispatch(login({ verifications: loginProps, name: userName }));
+    dispatch(login({ verifications: loginProps, name: user.name }));
   };
   return (
     <>
       <FormControl>
-        {/* <TextField
-          required
-          id="username"
-          label="User Name"
-          variant="outlined"
-          value={userName}
-          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            setUserName(event.target.value)
-          }
-        /> */}
-        {loginState.map((loginEntity, index) => (
+        {partners.map((partner, index) => (
           <Box
-            style={{ display: partners[index] ? "block" : "none" }}
-            key={loginEntity.direction}
+            style={{ display: partner.name ? "block" : "none" }}
+            key={`verification-${index}-${partner?.name}`}
           >
-            <Typography variant="subtitle1">{`${partners[index]?.user.name}`}</Typography>
-            {/* <TextField
-              id={`partner-name-${loginEntity.direction}`}
-              label="Partner Name"
-              variant="outlined"
-              disabled
-              value={partners[index]?.user.name}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                setPartnerField(
-                  event.target.value,
-                  loginEntity.direction,
-                  false
-                )
-              }
-            /> */}
+            <Typography variant="subtitle1">{`${partner.name}`}</Typography>
             <TextField
-              required
-              id={`partner-password-${loginEntity.direction}`}
-              label="Password"
+              size="small"
+              label="ПАРОЛЬ"
               variant="outlined"
-              value={loginEntity.password}
+              value={passwords[index]}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                setPartnerField(event.target.value, loginEntity.direction)
+                setPassword(event.target.value, index)
               }
             />
           </Box>
@@ -145,8 +87,9 @@ export const VerifiedLogin = () => {
           type="submit"
           variant="contained"
           onClick={(e: MouseEvent) => handleSubmit(e)}
+          disabled={loginLoading || !passwordFilled || confirmProhibited}
         >
-          Login
+          {loginLoading ? "ПІДТВЕРДЖУЮ..." :confirmProhibited ? "НЕ ПІДТВЕРДЖЕНО" : "ПІДТВЕРДИТИ"}
         </Button>
       </FormControl>
     </>

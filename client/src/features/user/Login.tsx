@@ -15,7 +15,7 @@ export const Login = () => {
     setIsNewUser(value);
   };
 
-  if (!partners[0] && !partners[1] && !partners[2] && !partners[3]) {
+  if (!partners[0].name && !partners[1].name && !partners[2].name && !partners[3].name) {
     return <NewUserLogin />
   }
   return (

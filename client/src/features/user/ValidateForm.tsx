@@ -29,16 +29,16 @@ export const ValidateForm = () => {
 
     switch (radiobuttonDirection) {
       case Direction.up:
-        partners[0] && setPartnerName(partners[0].user.name);
+        partners[0] && setPartnerName(partners[0].name);
         break;
       case Direction.right:
-        partners[1] && setPartnerName(partners[1].user.name);
+        partners[1] && setPartnerName(partners[1].name);
         break;
       case Direction.down:
-        partners[2] && setPartnerName(partners[2].user.name);
+        partners[2] && setPartnerName(partners[2].name);
         break;
       case Direction.up:
-        partners[3] && setPartnerName(partners[3].user.name);
+        partners[3] && setPartnerName(partners[3].name);
         break;
     }
   };

@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
-import { Direction, Partner } from "./types";
+import { Direction, Partner, User } from "./types";
 import { UserBox } from "./UserBox";
 import { useSelector } from "react-redux";
 import { RootState } from "app/rootReducer";
@@ -7,8 +7,8 @@ import { Grid } from "@mui/material";
 import { useAppDispatch } from "app/store";
 import { fetchByName, fetchPartners, receiveUser } from "./userSlice";
 
-const getPartnerName = (partner: Partner | undefined) => {
-  return partner ? partner.user.name : "X";
+const getPartnerName = (partner: User | undefined) => {
+  return partner ? partner.name : "X";
 };
 
 export const DisplayPartners = () => {
