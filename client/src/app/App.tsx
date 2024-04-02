@@ -43,7 +43,7 @@ function App() {
           Д
         </Grid>
         <Grid item xs={2}>
-          <Link to="/">Home</Link>
+          <Link to="/comrades">Comrades</Link>
         </Grid>
         <Grid item xs={2}>
           <Link to="/update-relation">Update Relation</Link>
@@ -72,7 +72,9 @@ function App() {
         )}
       </Grid>
       <Routes>
-        <Route path="/" element={<DisplayRelationsPage />} />
+        <Route path="comrades" element={<DisplayRelationsPage />}>
+          <Route path=":name" element={<DisplayRelationsPage />} />
+        </Route>
         <Route path="/login" element={<VerifiedLogin />} />
         <Route
           path="update-relation"

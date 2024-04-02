@@ -6,6 +6,7 @@ import { RootState } from "app/rootReducer";
 import { Grid } from "@mui/material";
 import { useAppDispatch } from "app/store";
 import { fetchByName, fetchPartners, receiveUser } from "./userSlice";
+import { useNavigate } from "react-router-dom";
 
 const getPartnerName = (partner: User | undefined) => {
   return partner ? partner.name : "X";
@@ -16,21 +17,27 @@ export const DisplayPartners = () => {
   const userName = useSelector((state: RootState) => state.user.user.name);
   const myName = useSelector((state: RootState) => state.user.me.name);
 
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const changeUser = (name: string) => {
-    dispatch(fetchByName(name));
+    // dispatch(fetchByName(name));
+    navigate(`/comrades/${name}`)
   };
-  useEffect(() => {
-    console.log(userName, myName);
-    if (!userName && !myName) return;
-    if (!userName) {
-      dispatch(receiveUser({ name: myName }));
-      return;
-    }
-    dispatch(receiveUser({ name: userName }));
-    dispatch(fetchPartners());
-  }, [userName, myName]);
+  // useEffect(() => {
+  //   console.log(userName, myName);
+  //   if (!userName && !myName) return;
+  //   if (!userName) {
+  //     // dispatch(receiveUser({ name: myName }));
+  //     console.log('navigate to my')
+  //     navigate(`/comrades/${myName}`)
+  //     return;
+  //   }
+  //   dispatch(receiveUser({ name: userName }));
+  //   console.log('Navigate to new comrade')
+  //   navigate(`/comrades/${userName}`, {replace: false})
+  //   dispatch(fetchPartners());
+  // }, [userName, myName]);
   return (
     <div>
       <Grid
