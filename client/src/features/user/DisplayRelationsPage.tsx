@@ -1,22 +1,21 @@
 import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import { DisplayPartners } from "./DisplayPartners";
 import { useAppDispatch } from "app/store";
-import { fetchByName, fetchMe, receiveUser } from "./userSlice";
+import { fetchByName, fetchMe, receiveUser, toggleIsFixed } from "./userSlice";
 import { Button, FormControlLabel, Switch, TextField } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "app/rootReducer";
 import { FixedRelationsMenu } from "./FixedRelationsMenu";
 import { Login } from "./Login";
+import { SearchUser } from "./SearchUser";
 
 export const DisplayRelationsPage = () => {
   const dispatch = useAppDispatch();
-  const [searchedUser, setSearchedUser] = useState<string>("");
-  const [isFixed, setIsFixed] = useState<boolean>(false);
+
   const me = useSelector((state: RootState) => state.user.me);
   const centralUser = useSelector((state: RootState) => state.user.user);
-
-  const handleSearch = (e: MouseEvent) => {
-    e.preventDefault();
+  const isFixed = useSelector((state: RootState) => state.user.isFixed); 
+  const handleSearch = (searchedUser: string) => {
     dispatch(fetchByName(searchedUser));
   };
 
@@ -26,7 +25,7 @@ export const DisplayRelationsPage = () => {
   };
   return (
     <>
-      <TextField
+      {/* <TextField
         required
         id="search-user"
         label="Search for user"
@@ -38,7 +37,8 @@ export const DisplayRelationsPage = () => {
       />
       <Button variant="contained" onClick={(e: MouseEvent) => handleSearch(e)}>
         Шукати
-      </Button>
+      </Button> */}
+      <SearchUser getSearchedUser={handleSearch}/>
       <Button
         disabled={!me.name}
         variant="contained"
@@ -52,7 +52,7 @@ export const DisplayRelationsPage = () => {
           <FormControlLabel
             style={{ userSelect: "none" }}
             control={
-              <Switch checked={isFixed} onClick={() => setIsFixed(!isFixed)} />
+              <Switch value={isFixed} checked={isFixed} onClick={() => dispatch(toggleIsFixed())} />
             }
             label="ЗАФІКСУВАТИ"
           />

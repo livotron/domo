@@ -1,18 +1,32 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Direction, LoginUserProps, Partner, User, VerifyUserProps } from "./types";
+import {
+  Direction,
+  LoginUserProps,
+  Partner,
+  User,
+  VerifyUserProps,
+} from "./types";
 import { AppDispatch, AppThunk } from "app/store";
-import { getMe, getPartners, getUserByName, loginUser, verifyUser } from "./userApi";
+import {
+  getMe,
+  getPartners,
+  getUserByName,
+  loginUser,
+  verifyUser,
+} from "./userApi";
 
 interface userSliceState {
   user: User;
   me: User;
   partners: (Partner | undefined)[];
+  isFixed: boolean;
 }
 
 const initialState: userSliceState = {
   user: { name: "" },
   me: { name: "" },
   partners: [],
+  isFixed: false,
 };
 
 const userSlice = createSlice({
@@ -23,7 +37,7 @@ const userSlice = createSlice({
       state.me = action.payload;
     },
     removeMe() {
-      return initialState
+      return initialState;
     },
     receiveUser(state, action: PayloadAction<User>) {
       state.user = action.payload;
@@ -35,6 +49,9 @@ const userSlice = createSlice({
         action.payload.find((partner) => partner.direction === Direction.down),
         action.payload.find((partner) => partner.direction === Direction.left),
       ];
+    },
+    toggleIsFixed(state) {
+      state.isFixed = !state.isFixed;
     },
   },
 });
@@ -67,13 +84,17 @@ export const verifyPartner =
 export const login =
   (props: LoginUserProps): AppThunk =>
   async (dispatch: AppDispatch) => {
-    const loginResponse = await loginUser(props);
-    localStorage.setItem('TOKEN',loginResponse.token);
-    dispatch(receiveUser({name: props.name}))
-    dispatch(fetchMe());
-    dispatch(userSlice.actions.receivePartners(loginResponse.partners));
+    try {
+      const loginResponse = await loginUser(props);
+      localStorage.setItem("TOKEN", loginResponse.token);
+      dispatch(receiveUser({ name: props.name }));
+      dispatch(fetchMe());
+      dispatch(userSlice.actions.receivePartners(loginResponse.partners));
+    } catch (e) {
+      console.log(e)
+    }
   };
 
-export const { removeMe, receiveUser } = userSlice.actions;
+export const { removeMe, receiveUser, toggleIsFixed } = userSlice.actions;
 
 export default userSlice.reducer;

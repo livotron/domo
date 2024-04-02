@@ -21,9 +21,6 @@ export const searchUserByName = async (nameStart, sessionContext) => {
     RETURN u as user
     ORDER BY u.name`);
   });
-  if (!checkupQuery.records.length) {
-    return null;
-  }
   return checkupQuery.records.map(rec => rec.get("user").properties);
 };
 
