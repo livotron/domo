@@ -7,7 +7,7 @@ interface Props {
 }
 export const UserBox = ({ name, changeUser, central }: Props) => {
   return (
-    <Card onClick={() => !central && changeUser(name)}>
+    <Card onClick={() => !central && name && changeUser(name)}>
       {name? name : 'X'}
     </Card>
   );

@@ -108,6 +108,7 @@ export const login =
       const loginResponse = await loginUser(props);
       localStorage.setItem("TOKEN", loginResponse.token);
       dispatch(receiveUser({ name: props.name }));
+      dispatch(userSlice.actions.receiveMe({ name: props.name }));
       dispatch(fetchMe());
       dispatch(userSlice.actions.loginFulfilled());
       // dispatch(userSlice.actions.receivePartners(loginResponse.partners));
