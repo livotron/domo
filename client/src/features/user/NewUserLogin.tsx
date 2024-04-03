@@ -66,7 +66,7 @@ export const NewUserLogin = () => {
   return (
     <FormControl>
       <FormLabel id="demo-radio-buttons-group-label">
-        ПОЛОЖЕННЯ ВАШОГО РЕКРУТЕРА:
+        РЕКРУТЕР ЗНАХОДИТЬСЯ ВІДНОСНО ВАС:
       </FormLabel>
       <RadioGroup
         aria-labelledby="demo-radio-buttons-group-label"

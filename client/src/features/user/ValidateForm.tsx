@@ -5,7 +5,9 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
+  Switch,
   TextField,
+  Typography,
 } from "@mui/material";
 import { Direction } from "./types";
 import { useSelector } from "react-redux";
@@ -13,85 +15,94 @@ import { RootState } from "app/rootReducer";
 import { ChangeEvent, FormEvent, MouseEvent, useState } from "react";
 import { useAppDispatch } from "app/store";
 import { verifyPartner } from "./userSlice";
+import { SearchUser } from "./SearchUser";
 
 export const ValidateForm = () => {
   const [radiobutton, setRadiobutton] = useState<Direction>(Direction.up);
-  const [partnerName, setPartnerName] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [partnerName, setPartnerName] = useState("");
+  const [password, setPassword] = useState("");
+  const [isNewPartner, setIsNewPartner] = useState(false);
 
   const userName = useSelector((state: RootState) => state.user.user.name);
-  const partners = useSelector((state: RootState) => state.user.partners);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const radiobuttonDirection = e.target.value as Direction;
     e.preventDefault();
     setRadiobutton(radiobuttonDirection);
-
-    switch (radiobuttonDirection) {
-      case Direction.up:
-        partners[0] && setPartnerName(partners[0].name);
-        break;
-      case Direction.right:
-        partners[1] && setPartnerName(partners[1].name);
-        break;
-      case Direction.down:
-        partners[2] && setPartnerName(partners[2].name);
-        break;
-      case Direction.up:
-        partners[3] && setPartnerName(partners[3].name);
-        break;
-    }
   };
   const dispatch = useAppDispatch();
   const handleSubmit = (e: MouseEvent) => {
     e.preventDefault();
     dispatch(
-      verifyPartner({ partnerName, direction: radiobutton, hash: password })
+      verifyPartner({ partnerName: partnerName.trim().replaceAll(" ", "_"), direction: radiobutton, hash: password })
     );
   };
   return (
     <FormControl>
-      <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
+      <Typography variant="subtitle1">ОБНОВИТИ КОНТАКТ</Typography>
+
+      <FormLabel id="demo-radio-buttons-group-label">ЗА НАПРЯМКОМ:</FormLabel>
       <RadioGroup
         aria-labelledby="demo-radio-buttons-group-label"
-        defaultValue="female"
         name="radio-buttons-group"
         value={radiobutton}
         onChange={(e) => handleChange(e)}
       >
-        <FormControlLabel value={Direction.up} control={<Radio />} label="Up" />
+        <FormControlLabel
+          value={Direction.up}
+          control={<Radio />}
+          label="ЗГОРИ"
+        />
         <FormControlLabel
           value={Direction.right}
           control={<Radio />}
-          label="Right"
+          label="СПРАВА"
         />
         <FormControlLabel
           value={Direction.down}
           control={<Radio />}
-          label="Down"
+          label="ЗНИЗУ"
         />
         <FormControlLabel
           value={Direction.left}
           control={<Radio />}
-          label="Left"
+          label="ЗЛІВА"
         />
       </RadioGroup>
-      <TextField
-        required
-        id="partner-name-field"
-        label="Partner"
-        variant="outlined"
-        value={partnerName}
-        onChange={(event: ChangeEvent<HTMLInputElement>) =>
-          setPartnerName(event.target.value)
+      <FormControlLabel
+        control={
+          <Switch
+            checked={isNewPartner}
+            onChange={(e) => setIsNewPartner(e.target.checked)}
+          />
         }
+        label="НОВОПРИБУЛИЙ"
       />
+      {isNewPartner ? (
+        <TextField
+          size="small"
+          id="partner-name-field"
+          label="ПОВНЕ ІМʼЯ"
+          variant="outlined"
+          value={partnerName}
+          onChange={(event: ChangeEvent<HTMLInputElement>) =>
+            setPartnerName(event.target.value.toUpperCase())
+          }
+        />
+      ) : (
+        <SearchUser
+          searchContext={userName}
+          getSearchedUser={(user) => setPartnerName(user || "")}
+        />
+      )}
       <TextField
-        required
+        size="small"
+        
         id="password-field"
-        label="Password"
+        label="ПАРОЛЬ"
         variant="outlined"
         value={password}
+        inputProps={{ maxLength: 44 }}
         onChange={(event: ChangeEvent<HTMLInputElement>) =>
           setPassword(event.target.value)
         }

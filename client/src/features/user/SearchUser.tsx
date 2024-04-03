@@ -19,25 +19,30 @@ export const SearchUser = ({ getSearchedUser, searchContext }: Props) => {
     setOptions([]);
     setValue(null);
     setInputValue("");
-  }, [searchContext])
+  }, [searchContext]);
   const handleInputValueChange = (newInputValue: string) => {
+    const inputValueCapitalized = newInputValue.toUpperCase();
+    if (inputValueCapitalized.length === 0) setOptions([]);
     if (
-      (newInputValue.length === 3 && inputValue.length < 3) ||
-      (newInputValue.length > 3 &&
-        newInputValue.substring(0, 3) !== inputValue.substring(0, 3))
+      (inputValueCapitalized.length === 3 && inputValue.length < 3) ||
+      (inputValueCapitalized.length > 3 &&
+        inputValueCapitalized.substring(0, 3) !== inputValue.substring(0, 3))
     ) {
       setLoading(true);
-      searchUsersByName(newInputValue.substring(0, 3)).then((res): void => {
-        setOptions(res.map((user) => user.name));
-        setLoading(false);
-        console.log(res);
-      });
+      searchUsersByName(inputValueCapitalized.substring(0, 3)).then(
+        (res): void => {
+          setOptions(res.map((user) => user.name.replaceAll("_", " ")));
+          setLoading(false);
+          console.log(res);
+        }
+      );
     }
-    setInputValue(newInputValue);
+    setInputValue(inputValueCapitalized);
   };
   const handleValueChange = (newValue: string | null) => {
-    setValue(newValue);
-    getSearchedUser(newValue);
+    const underscoredValue = newValue?.replaceAll(" ", "_") || null;
+    setValue(underscoredValue);
+    getSearchedUser(underscoredValue);
   };
 
   return (
