@@ -1,7 +1,7 @@
 import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import { DisplayPartners } from "./DisplayPartners";
 import { useAppDispatch } from "app/store";
-import { fetchByName, fetchMe, fetchPartners, receiveUser, toggleIsFixed } from "./userSlice";
+import { fetchPartners, receiveUser } from "./userSlice";
 import { Button, FormControlLabel, Switch, TextField } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "app/rootReducer";
@@ -15,6 +15,8 @@ export const DisplayRelationsPage = () => {
   const navigate = useNavigate();
   const me = useSelector((state: RootState) => state.user.me);
   const centralUser = useSelector((state: RootState) => state.user.user);
+  const [loginButtonPressed, setLoginButtonPressed] = useState(false);
+
   const handleSearch = (searchedUser: string | null) => {
     if (searchedUser) {
       // dispatch(fetchByName(searchedUser));
@@ -25,7 +27,7 @@ export const DisplayRelationsPage = () => {
 
   useEffect(() => {
     if (name) {
-      console.log("navigating by params");
+      setLoginButtonPressed(false);
       dispatch(receiveUser({ name }));
       dispatch(fetchPartners());
     }
@@ -50,7 +52,7 @@ export const DisplayRelationsPage = () => {
       <Button variant="contained" onClick={(e: MouseEvent) => handleSearch(e)}>
         Шукати
       </Button> */}
-      <SearchUser getSearchedUser={handleSearch} />
+      <SearchUser searchContext={name || ""} getSearchedUser={handleSearch} />
       <Button
         disabled={!me.name}
         variant="contained"
@@ -59,8 +61,20 @@ export const DisplayRelationsPage = () => {
         Я
       </Button>
       <DisplayPartners />
-
-      {centralUser.name && (me.name ? <FixedRelationsMenu /> : <Login />)}
+      {centralUser.name && !me.name && (
+        <>
+          <Button
+            disabled={loginButtonPressed}
+            variant="contained"
+            onClick={(e: MouseEvent) => setLoginButtonPressed(true)}
+          >
+            ВВІЙТИ
+          </Button>
+          <br />
+          {loginButtonPressed && <Login />}
+        </>
+      )}
+      {centralUser.name && me.name && <FixedRelationsMenu />}
     </>
   );
 };

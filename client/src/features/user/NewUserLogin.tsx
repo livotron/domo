@@ -100,7 +100,7 @@ export const NewUserLogin = () => {
           label="ЗЛІВА"
         />
       </RadioGroup>
-      <SearchUser getSearchedUser={handleSearchedUser} />
+      <SearchUser searchContext={user.name} getSearchedUser={handleSearchedUser} />
       <TextField
         size="small"
         id="password-field"

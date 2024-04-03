@@ -1,5 +1,5 @@
 import { Autocomplete, TextField } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { User } from "./types";
 import { searchUsersByName } from "./userApi";
 import { useAppDispatch } from "app/store";
@@ -7,13 +7,19 @@ import { fetchByName } from "./userSlice";
 
 interface Props {
   getSearchedUser: (user: string | null) => void;
+  searchContext: string;
 }
-export const SearchUser = ({ getSearchedUser }: Props) => {
+export const SearchUser = ({ getSearchedUser, searchContext }: Props) => {
   const [options, setOptions] = useState<string[]>([]);
   const [value, setValue] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    setOptions([]);
+    setValue(null);
+    setInputValue("");
+  }, [searchContext])
   const handleInputValueChange = (newInputValue: string) => {
     if (
       (newInputValue.length === 3 && inputValue.length < 3) ||
