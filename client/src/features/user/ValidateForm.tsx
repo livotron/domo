@@ -22,20 +22,36 @@ export const ValidateForm = () => {
   const [partnerName, setPartnerName] = useState("");
   const [password, setPassword] = useState("");
   const [isNewPartner, setIsNewPartner] = useState(false);
-
-  const userName = useSelector((state: RootState) => state.user.user.name);
+  const [isInitiated, setIsInitiated] = useState(false);
+  const { user } = useSelector((state: RootState) => state.user);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const radiobuttonDirection = e.target.value as Direction;
     e.preventDefault();
+    setIsInitiated(false);
     setRadiobutton(radiobuttonDirection);
   };
   const dispatch = useAppDispatch();
   const handleSubmit = (e: MouseEvent) => {
     e.preventDefault();
+    setIsInitiated(true);
     dispatch(
-      verifyPartner({ partnerName: partnerName.trim().replaceAll(" ", "_"), direction: radiobutton, hash: password })
+      verifyPartner({
+        partnerName: partnerName.trim().replaceAll(" ", "_"),
+        direction: radiobutton,
+        hash: password,
+      })
     );
+  };
+
+  const handlePartnerChange = (name: string) => {
+    setIsInitiated(false);
+    setPartnerName(name);
+  };
+
+  const handlePasswordChange = (pass: string) => {
+    setIsInitiated(false);
+    setPassword(pass);
   };
   return (
     <FormControl>
@@ -86,33 +102,33 @@ export const ValidateForm = () => {
           variant="outlined"
           value={partnerName}
           onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            setPartnerName(event.target.value.toUpperCase())
+            handlePartnerChange(event.target.value.toUpperCase())
           }
         />
       ) : (
         <SearchUser
-          searchContext={userName}
-          getSearchedUser={(user) => setPartnerName(user || "")}
+          searchContext={user.name}
+          getSearchedUser={(user) => handlePartnerChange(user || "")}
         />
       )}
       <TextField
         size="small"
-        
         id="password-field"
         label="ПАРОЛЬ"
         variant="outlined"
         value={password}
         inputProps={{ maxLength: 44 }}
         onChange={(event: ChangeEvent<HTMLInputElement>) =>
-          setPassword(event.target.value)
+          handlePasswordChange(event.target.value)
         }
       />
       <Button
         type="submit"
         variant="contained"
         onClick={(e: MouseEvent) => handleSubmit(e)}
+        disabled={isInitiated || !partnerName || !password}
       >
-        Verify
+        {isInitiated ? "ЗКОНТАКТОВАНО" : "ЗКОНТАКТУВАТИСЬ"}
       </Button>
     </FormControl>
   );
