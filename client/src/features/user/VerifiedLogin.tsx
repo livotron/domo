@@ -78,7 +78,7 @@ export const VerifiedLogin = () => {
               variant="outlined"
               value={passwords[index]}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                setPassword(event.target.value, index)
+                setPassword(event.target.value.trim(), index)
               }
             />
           </Box>

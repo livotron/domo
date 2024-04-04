@@ -56,7 +56,7 @@ export const NewUserLogin = () => {
         verifications: [
           {
             direction: radiobutton,
-            hash: password,
+            hash: password.trim(),
             partnerName: partnerName,
           },
         ],
@@ -108,7 +108,7 @@ export const NewUserLogin = () => {
         variant="outlined"
         value={password}
         onChange={(event: ChangeEvent<HTMLInputElement>) =>
-          handlePasswordChanged(event.target.value)
+          handlePasswordChanged(event.target.value.trim())
         }
       />
       <Button

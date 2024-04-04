@@ -102,7 +102,7 @@ export const ValidateForm = () => {
           variant="outlined"
           value={partnerName}
           onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            handlePartnerChange(event.target.value.toUpperCase())
+            handlePartnerChange(event.target.value.trim().toUpperCase())
           }
         />
       ) : (
@@ -119,7 +119,7 @@ export const ValidateForm = () => {
         value={password}
         inputProps={{ maxLength: 44 }}
         onChange={(event: ChangeEvent<HTMLInputElement>) =>
-          handlePasswordChange(event.target.value)
+          handlePasswordChange(event.target.value.trim())
         }
       />
       <Button
