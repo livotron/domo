@@ -1,6 +1,5 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import { getSession } from "../src/neo4j.js";
 import auth from "../src/auth.js";
 import {
   checkVerifications,
@@ -156,31 +155,49 @@ router.post("/login", async function (req, res) {
     if (!verified) {
       return res.status(401).send({ message: "Unauthorized" });
     }
-    await deleteOldVerification(name, "UP", req);
-    await deleteOldVerification(name, "RIGHT", req);
-    await deleteOldVerification(name, "DOWN", req);
-    await deleteOldVerification(name, "LEFT", req);
+    let supportRelations = []
+    const partners = await getPartners(name, req);
+    if (!partners.length && verifications.length === 1) {
+      await verifyExistingUser(
+              name,
+              verifications[0].partnerName,
+              verifications[0].direction,
+              verifications[0].hash,
+              req
+            );
+      const supportRelation = await createSupportRelations(
+        name,
+        verifications[0].partnerName,
+        verifications[0].direction,
+        req
+      );
+      supportRelations.push(supportRelation)
+    }
+    // await deleteOldVerification(name, "UP", req);
+    // await deleteOldVerification(name, "RIGHT", req);
+    // await deleteOldVerification(name, "DOWN", req);
+    // await deleteOldVerification(name, "LEFT", req);
 
-    const supportRelations = await verifications.reduce(
-      async (memo, verification) => {
-        const results = await memo;
-        await verifyExistingUser(
-          name,
-          verification.partnerName,
-          verification.direction,
-          verification.hash,
-          req
-        );
-        const supportRelation = await createSupportRelations(
-          name,
-          verification.partnerName,
-          verification.direction,
-          req
-        );
-        return [...results, supportRelation];
-      },
-      []
-    );
+    // const supportRelations = await verifications.reduce(
+    //   async (memo, verification) => {
+    //     const results = await memo;
+    //     await verifyExistingUser(
+    //       name,
+    //       verification.partnerName,
+    //       verification.direction,
+    //       verification.hash,
+    //       req
+    //     );
+    //     const supportRelation = await createSupportRelations(
+    //       name,
+    //       verification.partnerName,
+    //       verification.direction,
+    //       req
+    //     );
+    //     return [...results, supportRelation];
+    //   },
+    //   []
+    // );
     const token = jwt.sign(
       {
         name,
