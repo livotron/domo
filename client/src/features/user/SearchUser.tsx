@@ -40,8 +40,8 @@ export const SearchUser = ({ getSearchedUser, searchContext }: Props) => {
     setInputValue(inputValueCapitalized);
   };
   const handleValueChange = (newValue: string | null) => {
+    setValue(newValue);
     const underscoredValue = newValue?.replaceAll(" ", "_") || null;
-    setValue(underscoredValue);
     getSearchedUser(underscoredValue);
   };
 
