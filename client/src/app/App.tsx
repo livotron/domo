@@ -39,27 +39,18 @@ function App() {
   return (
     <Container>
       <Grid container spacing={2} paddingY={2}>
-        <Grid xs={1} item>
-          Д
-        </Grid>
-        <Grid item xs={2}>
+        <Grid item >
           <Link to="/comrades">Comrades</Link>
         </Grid>
-        <Grid item xs={2}>
+        <Grid item >
           <Link to="/update-relation">Update Relation</Link>
-        </Grid>
-        <Grid xs={2} item>
-          <Link to="/login">Login</Link>
-        </Grid>
-        <Grid xs={2} item>
-          <Link to="/auth">Auth Component</Link>
         </Grid>
         {me.name && (
           <>
-            <Grid xs={2} item>
-              <Link to="/me">{me.name}</Link>
+            <Grid xs={4} item>
+              <Link to="/me">{me.name.replaceAll("_", " ")}</Link>
             </Grid>
-            <Grid xs={1} item>
+            <Grid item>
               <Button
                 type="submit"
                 variant="contained"
