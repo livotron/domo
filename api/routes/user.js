@@ -151,27 +151,30 @@ router.get("/partners/:name", async function (req, res) {
 router.post("/login", async function (req, res) {
   try {
     const { name, verifications } = req.body;
+    const partners = await getPartners(name, req);
+    if (partners.length > verifications.length) {
+      return res.status(401).send({ message: "Unauthorized" });
+    }
     const verified = await checkVerifications(name, verifications, req);
     if (!verified) {
       return res.status(401).send({ message: "Unauthorized" });
     }
-    let supportRelations = []
-    const partners = await getPartners(name, req);
+    let supportRelations = [];
     if (!partners.length && verifications.length === 1) {
       await verifyExistingUser(
-              name,
-              verifications[0].partnerName,
-              verifications[0].direction,
-              verifications[0].hash,
-              req
-            );
+        name,
+        verifications[0].partnerName,
+        verifications[0].direction,
+        verifications[0].hash,
+        req
+      );
       const supportRelation = await createSupportRelations(
         name,
         verifications[0].partnerName,
         verifications[0].direction,
         req
       );
-      supportRelations.push(supportRelation)
+      supportRelations.push(supportRelation);
     }
     // await deleteOldVerification(name, "UP", req);
     // await deleteOldVerification(name, "RIGHT", req);
