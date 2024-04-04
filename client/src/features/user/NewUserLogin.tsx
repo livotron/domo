@@ -20,7 +20,7 @@ export const NewUserLogin = () => {
   const [password, setPassword] = useState<string>("");
   const [confirmProhibited, setConfirmProhibited] = useState(false);
 
-  const { user, loginError, loginLoading } = useSelector(
+  const { user, isError, isLoading } = useSelector(
     (state: RootState) => state.user
   );
   const partners = useSelector((state: RootState) => state.user.partners);
@@ -45,8 +45,8 @@ export const NewUserLogin = () => {
     setPassword(password);
   };
   useEffect(() => {
-    if (loginError) setConfirmProhibited(true);
-  }, [loginError]);
+    if (isError) setConfirmProhibited(true);
+  }, [isError]);
   const dispatch = useAppDispatch();
   const handleSubmit = (e: MouseEvent) => {
     e.preventDefault();
@@ -113,7 +113,7 @@ export const NewUserLogin = () => {
       />
       <Button
         disabled={
-          !password || !partnerName || loginLoading || confirmProhibited
+          !password || !partnerName || isLoading || confirmProhibited
         }
         type="submit"
         variant="contained"

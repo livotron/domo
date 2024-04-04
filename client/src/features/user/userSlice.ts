@@ -20,8 +20,8 @@ interface userSliceState {
   me: User;
   partners: User[];
   isFixed: boolean;
-  loginError: boolean;
-  loginLoading: boolean;
+  isError: boolean;
+  isLoading: boolean;
 }
 
 const initialState: userSliceState = {
@@ -29,8 +29,8 @@ const initialState: userSliceState = {
   me: { name: "" },
   partners: [{ name: "" }, { name: "" }, { name: "" }, { name: "" }],
   isFixed: false,
-  loginError: false,
-  loginLoading: false,
+  isError: false,
+  isLoading: false,
 };
 
 const userSlice = createSlice({
@@ -62,15 +62,15 @@ const userSlice = createSlice({
       state.isFixed = !state.isFixed;
     },
     loginPending(state) {
-      state.loginError = false;
-      state.loginLoading = true;
+      state.isError = false;
+      state.isLoading = true;
     },
     loginRejected(state) {
-      state.loginError = true;
-      state.loginLoading = false;
+      state.isError = true;
+      state.isLoading = false;
     },
     loginFulfilled(state) {
-      state.loginLoading = false;
+      state.isLoading = false;
     },
   },
 });

@@ -24,7 +24,7 @@ const getDirectionFromIndex = (index: number) => {
 
 export const VerifiedLogin = () => {
   // const [userName, setUserName] = useState<string>("");
-  const { user, loginError, loginLoading } = useSelector(
+  const { user, isError, isLoading } = useSelector(
     (state: RootState) => state.user
   );
   const partners = useSelector((state: RootState) => state.user.partners);
@@ -50,8 +50,8 @@ export const VerifiedLogin = () => {
   };
 
   useEffect(() => {
-    if (loginError) setConfirmProhibited(true);
-  }, [loginError]);
+    if (isError) setConfirmProhibited(true);
+  }, [isError]);
 
   const dispatch = useAppDispatch();
   const handleSubmit = (e: MouseEvent) => {
@@ -87,9 +87,9 @@ export const VerifiedLogin = () => {
           type="submit"
           variant="contained"
           onClick={(e: MouseEvent) => handleSubmit(e)}
-          disabled={loginLoading || !passwordFilled || confirmProhibited}
+          disabled={isLoading || !passwordFilled || confirmProhibited}
         >
-          {loginLoading ? "ПІДТВЕРДЖУЮ..." :confirmProhibited ? "НЕ ПІДТВЕРДЖЕНО" : "ПІДТВЕРДИТИ"}
+          {isLoading ? "ПІДТВЕРДЖУЮ..." :confirmProhibited ? "НЕ ПІДТВЕРДЖЕНО" : "ПІДТВЕРДИТИ"}
         </Button>
       </FormControl>
     </>
