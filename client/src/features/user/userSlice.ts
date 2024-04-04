@@ -111,7 +111,7 @@ export const login =
       dispatch(userSlice.actions.receiveMe({ name: props.name }));
       dispatch(fetchMe());
       dispatch(userSlice.actions.loginFulfilled());
-      // dispatch(userSlice.actions.receivePartners(loginResponse.partners));
+      dispatch(userSlice.actions.receivePartners(loginResponse.partners));
     } catch (e) {
       dispatch(userSlice.actions.loginRejected());
       console.log(e);
