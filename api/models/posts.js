@@ -6,8 +6,8 @@ export const createPost = async (name, title, text, level, sessionContext) => {
   const createdPost = await session.executeWrite((tx) => {
     return tx.run(
       `Match (u:User {name: $name})
-    CREATE (u)-[:WRITES]->(p:Post {title: $title, text: $text, level: ${level}, createdAt: timestamp()})
-    RETURN u as user, p as post`,
+    CREATE (u)-[:WRITES]->(p:Post {title: $title, text: $text, level: ${level}, createdAt: datetime()})
+    RETURN p as post`,
       {
         name,
         title,
@@ -15,15 +15,10 @@ export const createPost = async (name, title, text, level, sessionContext) => {
       }
     );
   });
-  console.log(createdPost);
+  const properties = createdPost.records[0].get("post").properties;
+  console.log(properties, properties.toString());
   return {
-    user: createdPost.records[0].get("user").properties,
-    post: {
-      ...createdPost.records[0].get("post").properties,
-      createdAt: createdPost.records[0]
-        .get("post")
-        .properties.createdAt.toNumber(),
-      level: createdPost.records[0].get("post").properties.level.toNumber(),
-    },
+    ...properties,
+    createdAt: properties.createdAt.toStandardDate()
   };
 };

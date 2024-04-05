@@ -7,7 +7,9 @@ export function getDriver() {
 }
 
 export async function initDriver(uri, username, password) {
-  driver = neo4j.driver(uri, neo4j.auth.basic(username, password));
+  driver = neo4j.driver(uri, neo4j.auth.basic(username, password), {
+    disableLosslessIntegers: true,
+  });
 
   const res = await driver.getServerInfo();
   console.log("Neo4jDriver:", res);
