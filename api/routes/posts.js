@@ -1,6 +1,6 @@
 import express from "express";
 import auth from "../src/auth.js";
-import { createPost } from "../models/posts.js";
+import { createPost, startNewDive } from "../models/posts.js";
 
 var router = express.Router();
 
@@ -18,6 +18,14 @@ router.post("/", auth, async function (req, res) {
     req
   );
   res.send(createdPost);
+});
+
+router.post("/new-dive", auth, async function (req, res) {
+  const createdDive = await startNewDive(
+    req.user.name,
+    req
+  );
+  res.send(createdDive);
 });
 
 export default router;

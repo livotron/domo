@@ -16,9 +16,26 @@ export const createPost = async (name, title, text, level, sessionContext) => {
     );
   });
   const properties = createdPost.records[0].get("post").properties;
-  console.log(properties, properties.toString());
   return {
     ...properties,
-    createdAt: properties.createdAt.toStandardDate()
+    createdAt: properties.createdAt.toStandardDate(),
+  };
+};
+
+export const startNewDive = async (userName, sessionContext) => {
+  const session = getSession(sessionContext);
+  debugger;
+  const newDive = await session.executeWrite((tx) => {
+    return tx.run(
+      `MATCH (u:User {name: $name})
+      CREATE (u)-[:INITIATES]->(d: Dive {level: 1, createdAt: datetime()})
+      RETURN d as dive`,
+      { name: userName }
+    );
+  });
+  const properties = newDive.records[0].get("dive").properties;
+  return {
+    ...properties,
+    createdAt: properties.createdAt.toStandardDate(),
   };
 };
