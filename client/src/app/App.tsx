@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "./rootReducer";
 import { DisplayRelationsPage } from "features/user/DisplayRelationsPage";
 import { VerifiedLogin } from "features/user/VerifiedLogin";
+import { WritePost } from "features/Posts/WritePost";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -39,24 +40,27 @@ function App() {
   return (
     <Container>
       <Grid container spacing={2} paddingY={2}>
-        <Grid item >
-          <Link to="/comrades">Comrades</Link>
+        <Grid item xs={2}>
+          <Link to="/comrades">ТОВАРИШІ</Link>
         </Grid>
-        <Grid item >
-          <Link to="/update-relation">Update Relation</Link>
+        <Grid item xs={2}>
+          <Link to="/update-relation">КОНТАКТИ</Link>
+        </Grid>
+        <Grid item xs={2}>
+          <Link to="/posts">ПОСТИ</Link>
         </Grid>
         {me.name && (
           <>
             <Grid xs={4} item>
               <Link to="/me">{me.name.replaceAll("_", " ")}</Link>
             </Grid>
-            <Grid item>
+            <Grid item xs={2}>
               <Button
                 type="submit"
                 variant="contained"
                 onClick={(e: MouseEvent) => handleLogout(e)}
               >
-                Logout
+                ВИХІД
               </Button>
             </Grid>
           </>
@@ -72,6 +76,14 @@ function App() {
           element={
             <ProtectedRoutes>
               <UpdateRelationPage />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="posts"
+          element={
+            <ProtectedRoutes>
+              <WritePost />
             </ProtectedRoutes>
           }
         />
