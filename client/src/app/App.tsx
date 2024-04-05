@@ -80,7 +80,7 @@ function App() {
           }
         />
         <Route
-          path="posts"
+          path="posts/create"
           element={
             <ProtectedRoutes>
               <WritePost />

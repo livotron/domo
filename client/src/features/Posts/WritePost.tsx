@@ -1,4 +1,5 @@
 import {
+  Button,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -10,7 +11,9 @@ import {
   SelectChangeEvent,
   TextField,
 } from "@mui/material";
-import { ChangeEvent, useState } from "react";
+import { useAppDispatch } from "app/store";
+import { ChangeEvent, MouseEvent, useState } from "react";
+import { createPost } from "./postsSlice";
 
 export const WritePost = () => {
   const [level, setLevel] = useState(8);
@@ -20,6 +23,11 @@ export const WritePost = () => {
   const handleLevelChange = (event: SelectChangeEvent) => {
     setLevel(Number(event.target.value));
   };
+  const dispatch = useAppDispatch();
+  const handleSubmit = () => {
+    dispatch(createPost({ title, text: content, level }));
+  };
+
   return (
     <div>
       <FormControl fullWidth>
@@ -65,6 +73,15 @@ export const WritePost = () => {
           setContent(event.target.value)
         }
       />
+      <br />
+      <Button
+        type="submit"
+        variant="contained"
+        onClick={handleSubmit}
+        disabled={false}
+      >
+        ЗАПОСТИТИ
+      </Button>
     </div>
   );
 };
