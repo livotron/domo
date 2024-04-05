@@ -102,7 +102,7 @@ export const ValidateForm = () => {
           variant="outlined"
           value={partnerName}
           onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            handlePartnerChange(event.target.value.trim().toUpperCase())
+            handlePartnerChange(event.target.value.toUpperCase())
           }
         />
       ) : (
