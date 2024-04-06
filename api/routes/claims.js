@@ -1,6 +1,6 @@
 import express from "express";
 import auth from "../src/auth.js";
-import { createPost, startNewDive } from "../models/posts.js";
+import { createClaim, matchClaim, startNewDive } from "../models/claims.js";
 
 var router = express.Router();
 
@@ -10,14 +10,14 @@ router.get("/", function (req, res, next) {
 });
 
 router.post("/", auth, async function (req, res) {
-  const createdPost = await createPost(
+  const createdClaim = await createClaim(
     req.user.name,
     req.body.title,
     req.body.text,
     req.body.level,
     req
   );
-  res.send(createdPost);
+  res.send(createdClaim);
 });
 
 router.post("/new-dive", auth, async function (req, res) {
@@ -26,6 +26,15 @@ router.post("/new-dive", auth, async function (req, res) {
     req
   );
   res.send(createdDive);
+});
+
+router.get("/by-time-and-user/:time/:name", auth, async function (req, res) {
+  const declaration = await matchClaim(
+    req.params.name,
+    req.params.time,
+    req
+  );
+  res.send(declaration);
 });
 
 export default router;

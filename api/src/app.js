@@ -14,7 +14,7 @@ const __dirname = new URL(".", import.meta.url).pathname;
 
 import indexRouter from "../routes/index.js";
 import userRouter from "../routes/user.js";
-import postsRouter from "../routes/posts.js"
+import claimsRouter from "../routes/claims.js"
 import testAPIRouter from "../routes/testAPI.js";
 import { initDriver, neo4jSessionCleanup } from "./neo4j.js";
 
@@ -33,7 +33,7 @@ app.use(neo4jSessionCleanup);
 
 app.use("/", indexRouter);
 app.use("/user", userRouter);
-app.use("/posts", postsRouter);
+app.use("/claims", claimsRouter);
 app.use("/testAPI", testAPIRouter);
 
 app.get("*", (req, res) => {
