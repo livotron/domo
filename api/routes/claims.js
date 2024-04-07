@@ -4,6 +4,7 @@ import {
   acknowlegeClaim,
   createClaim,
   getClaims,
+  getUserFocus,
   incrementDive,
   matchClaim,
   startNewDive,

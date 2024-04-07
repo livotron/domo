@@ -58,6 +58,9 @@ export const getUserFocus = async (userName, sessionContext) => {
       { name: userName }
     );
   });
+  if (!dive.records.length) {
+    return null;
+  }
   return dive.records[0].get("dive").properties;
 };
 
@@ -124,14 +127,22 @@ export const incrementDive = async (userName, sessionContext) => {
 export const startNewDive = async (userName, sessionContext) => {
   const session = getSession(sessionContext);
   const previousDive = await getUserFocus(userName, sessionContext);
-
-  await deleteUserFocus(userName, sessionContext);
-
+  let finalDate;
   const dateNow = DateTime.utc();
   const dateCurrent = dateNow.minus(getReadDelta(1));
-  const datePrevious = DateTime.fromISO(previousDive.createdAt).setZone("utc");
-  console.log(dateCurrent, datePrevious);
-  const finalDate = dateCurrent > datePrevious ? dateCurrent : datePrevious;
+
+  if (previousDive) {
+    await deleteUserFocus(userName, sessionContext);
+
+    const datePrevious = DateTime.fromISO(previousDive.createdAt).setZone(
+      "utc"
+    );
+    console.log(dateCurrent, datePrevious);
+    finalDate = dateCurrent > datePrevious ? dateCurrent : datePrevious;
+  } else {
+    finalDate = dateCurrent;
+  }
+
   const newDive = await session.executeWrite((tx) => {
     return tx.run(
       `
