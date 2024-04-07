@@ -20,14 +20,17 @@ import { RootState } from "./rootReducer";
 import { DisplayRelationsPage } from "features/user/DisplayRelationsPage";
 import { VerifiedLogin } from "features/user/VerifiedLogin";
 import { WriteClaim } from "features/Claims/WriteClaim";
+import { fetchDive, removeClaims } from "features/Claims/slice";
 
 function App() {
   const dispatch = useAppDispatch();
   const me = useSelector((state: RootState) => state.user.me);
+  const { level } = useSelector((state: RootState) => state.claims.myDive);
 
   useEffect(() => {
     if (localStorage.getItem("TOKEN")) {
       dispatch(fetchMe());
+      dispatch(fetchDive());
     }
   }, [dispatch]);
   const navigate = useNavigate();
@@ -35,18 +38,19 @@ function App() {
     e.preventDefault();
     localStorage.removeItem("TOKEN");
     dispatch(removeMe());
+    dispatch(removeClaims())
     navigate("/");
   };
   return (
     <Container>
       <Grid container spacing={2} paddingY={2}>
-        <Grid item xs={2}>
+        <Grid item xs="auto">
           <Link to="/comrades">ТОВАРИШІ</Link>
         </Grid>
-        <Grid item xs={2}>
+        <Grid item xs="auto">
           <Link to="/update-relation">КОНТАКТИ</Link>
         </Grid>
-        <Grid item xs={2}>
+        <Grid item xs="auto">
           <Link to="/posts">ПОСТИ</Link>
         </Grid>
         {me.name && (
@@ -54,7 +58,8 @@ function App() {
             <Grid xs={4} item>
               <Link to="/me">{me.name.replaceAll("_", " ")}</Link>
             </Grid>
-            <Grid item xs={2}>
+            <Grid xs="auto">{level}</Grid>
+            <Grid item xs="auto">
               <Button
                 type="submit"
                 variant="contained"

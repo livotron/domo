@@ -3,13 +3,13 @@ import { useDispatch } from "react-redux";
 import todos from "features/todoList/todoSlice";
 import visibilityFilter from "features/visibilityFilter/visibilityFilterSlice";
 import user from "features/user/userSlice";
-import posts from "features/Claims/slice";
+import claims from "features/Claims/slice";
 
 const rootReducer = combineReducers({
   todos,
   visibilityFilter,
   user,
-  posts,
+  claims,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

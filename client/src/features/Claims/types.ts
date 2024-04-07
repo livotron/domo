@@ -5,3 +5,10 @@ export type Claim = {
   level: number,
   createdAt?: string
 }
+
+export type Dive = {
+  createdAt: string,
+  stopAt: string,
+  level: number,
+  acknowlegmentLogs: string[]
+}
