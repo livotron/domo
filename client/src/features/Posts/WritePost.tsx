@@ -58,7 +58,7 @@ export const WritePost = () => {
         value={title}
         inputProps={{ maxLength: 44 }}
         onChange={(event: ChangeEvent<HTMLInputElement>) =>
-          setTitle(event.target.value)
+          setTitle(event.target.value.toUpperCase())
         }
       />
       <br />
