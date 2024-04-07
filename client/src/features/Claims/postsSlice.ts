@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Post } from "./types";
+import { Claim } from "./types";
 import { AppDispatch, AppThunk } from "app/store";
-import { writePost } from "./postsApi";
+import { writeClaim } from "./postsApi";
 
 interface postsSliceState {
-  myPosts: Post[];
+  myPosts: Claim[];
 }
 
 const initialState: postsSliceState = {
@@ -15,14 +15,14 @@ const postsSlice = createSlice({
   name: "Posts",
   initialState,
   reducers: {
-    addMyPost(state, action: PayloadAction<Post>) {
+    addMyPost(state, action: PayloadAction<Claim>) {
       state.myPosts.push(action.payload)
     }
   }
 })
 
-export const createPost = (post: Post): AppThunk => async (dispatch: AppDispatch) => {
-  const createdPost = await writePost(post);
+export const createPost = (post: Claim): AppThunk => async (dispatch: AppDispatch) => {
+  const createdPost = await writeClaim(post);
   dispatch(postsSlice.actions.addMyPost(createdPost));
 };
 

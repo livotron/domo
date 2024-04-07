@@ -1,5 +1,5 @@
 
-export type Post = {
+export type Claim = {
   title: string,
   text: string,
   level: number,

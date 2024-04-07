@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "./rootReducer";
 import { DisplayRelationsPage } from "features/user/DisplayRelationsPage";
 import { VerifiedLogin } from "features/user/VerifiedLogin";
-import { WritePost } from "features/Posts/WritePost";
+import { WriteClaim } from "features/Claims/WriteClaim";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -83,7 +83,7 @@ function App() {
           path="posts/create"
           element={
             <ProtectedRoutes>
-              <WritePost />
+              <WriteClaim />
             </ProtectedRoutes>
           }
         />

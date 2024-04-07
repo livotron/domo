@@ -1,12 +1,8 @@
 import {
   Button,
   FormControl,
-  FormControlLabel,
-  FormLabel,
   InputLabel,
   MenuItem,
-  Radio,
-  RadioGroup,
   Select,
   SelectChangeEvent,
   TextField,
@@ -15,7 +11,7 @@ import { useAppDispatch } from "app/store";
 import { ChangeEvent, MouseEvent, useState } from "react";
 import { createPost } from "./postsSlice";
 
-export const WritePost = () => {
+export const WriteClaim = () => {
   const [level, setLevel] = useState(8);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
