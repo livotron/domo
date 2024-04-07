@@ -19,8 +19,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "./rootReducer";
 import { DisplayRelationsPage } from "features/user/DisplayRelationsPage";
 import { VerifiedLogin } from "features/user/VerifiedLogin";
-import { WriteClaim } from "features/Claims/WriteClaim";
-import { fetchDive, removeClaims } from "features/Claims/slice";
+import { WriteClaim } from "features/claims/WriteClaim";
+import { fetchDive, removeClaims } from "features/claims/slice";
+import { ScrollClaims } from "features/claims/ScrollClaims";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -38,7 +39,7 @@ function App() {
     e.preventDefault();
     localStorage.removeItem("TOKEN");
     dispatch(removeMe());
-    dispatch(removeClaims())
+    dispatch(removeClaims());
     navigate("/");
   };
   return (
@@ -51,7 +52,10 @@ function App() {
           <Link to="/update-relation">КОНТАКТИ</Link>
         </Grid>
         <Grid item xs="auto">
-          <Link to="/posts">ПОСТИ</Link>
+          <Link to="/claims">ПОСТИ</Link>
+        </Grid>
+        <Grid item xs="auto">
+          <Link to="/claims/create">НАПИСАТИ</Link>
         </Grid>
         {me.name && (
           <>
@@ -84,14 +88,24 @@ function App() {
             </ProtectedRoutes>
           }
         />
-        <Route
-          path="posts/create"
-          element={
-            <ProtectedRoutes>
-              <WriteClaim />
-            </ProtectedRoutes>
-          }
-        />
+        <Route path="claims">
+          <Route
+            path=""
+            element={
+              <ProtectedRoutes>
+                <ScrollClaims />
+              </ProtectedRoutes>
+            }
+          ></Route>
+          <Route
+            path="create"
+            element={
+              <ProtectedRoutes>
+                <WriteClaim />
+              </ProtectedRoutes>
+            }
+          />
+        </Route>
         <Route
           path="/auth"
           element={

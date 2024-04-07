@@ -5,12 +5,14 @@ import { callCreateDive, getDive, writeClaim } from "./api";
 
 interface claimsSliceState {
   myClaims: Claim[];
+  claims: Claim[];
   myDive: Dive;
 }
 
 const initialState: claimsSliceState = {
   myClaims: [],
   myDive: { createdAt: "", stopAt: "", level: 0, acknowlegmentLogs: [] },
+  claims: []
 };
 
 const claimsSlice = createSlice({

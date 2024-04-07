@@ -14,6 +14,7 @@ import {
   loginUser,
   verifyUser,
 } from "./userApi";
+import { fetchDive } from "features/claims/slice";
 
 interface userSliceState {
   user: User;
@@ -110,8 +111,9 @@ export const login =
       dispatch(receiveUser({ name: props.name }));
       dispatch(userSlice.actions.receiveMe({ name: props.name }));
       dispatch(fetchMe());
+      dispatch(fetchDive());
       dispatch(userSlice.actions.loginFulfilled());
-      dispatch(userSlice.actions.receivePartners(loginResponse.partners));
+      dispatch(fetchPartners());
     } catch (e) {
       dispatch(userSlice.actions.loginRejected());
       console.log(e);
