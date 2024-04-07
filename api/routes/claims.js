@@ -4,6 +4,7 @@ import {
   acknowlegeClaim,
   createClaim,
   getClaims,
+  incrementDive,
   matchClaim,
   startNewDive,
 } from "../models/claims.js";
@@ -28,6 +29,11 @@ router.post("/", auth, async function (req, res) {
 
 router.post("/new-dive", auth, async function (req, res) {
   const createdDive = await startNewDive(req.user.name, req);
+  res.send(createdDive);
+});
+
+router.post("/increment-dive", auth, async function (req, res) {
+  const createdDive = await incrementDive(req.user.name, req);
   res.send(createdDive);
 });
 

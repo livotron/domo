@@ -13,6 +13,7 @@ const getReadDelta = (level) => {
     { minutes: 30 },
     { minutes: 15 },
     { minutes: 5 },
+    null,
   ];
   return deltas[level];
 };
@@ -52,12 +53,72 @@ export const getUserFocus = async (userName, sessionContext) => {
   const session = getSession(sessionContext);
   const dive = await session.executeRead((tx) => {
     return tx.run(
-      `MATCH (u:User {name: $name})-[f:FOCUSES]->(k:Dive)
-      Return k as dive`,
+      `MATCH (u:User {name: $name})-[f:FOCUSES]->(d:Dive)
+      Return d as dive`,
       { name: userName }
     );
   });
   return dive.records[0].get("dive").properties;
+};
+
+export const getLastDiveInRange = async (
+  name,
+  rangeStop,
+  level,
+  sessionContext
+) => {
+  const session = getSession(sessionContext);
+  const lastDive = await session.executeRead((tx) => {
+    return tx.run(
+      `MATCH (u:User {name: $name})-[:INITIATES]->(d:Dive)
+      WHERE d.createdAt > $rangeStop AND d.level > $level
+      RETURN d as dive
+      ORDER BY d.createdAt DESC
+      SKIP 1
+      LIMIT 1
+      `,
+      {
+        name,
+        rangeStop: rangeStop.toString(),
+        level: neo4j.int(level),
+      }
+    );
+  });
+  if (!lastDive.records.length) return null;
+  return lastDive.records[0].get("dive").properties;
+};
+
+export const incrementDive = async (userName, sessionContext) => {
+  const session = getSession(sessionContext);
+  const focusedDive = await getUserFocus(userName, sessionContext);
+  const focusedDateRangeStop = DateTime.fromISO(focusedDive.createdAt)
+    .setZone("utc")
+    .minus(getReadDelta(focusedDive.level + 1));
+  console.log(focusedDive, focusedDateRangeStop);
+  const previousDives = await getLastDiveInRange(
+    userName,
+    focusedDateRangeStop,
+    focusedDive.level,
+    sessionContext
+  );
+  const incrementedDive = await session.executeWrite((tx) => {
+    return tx.run(
+      `
+        MATCH (u:User {name: $name})-[:FOCUSES]->(d:Dive)
+        SET d.level = d.level + 1
+        SET d.stopAt = $stopTime
+        RETURN d as dive
+        `,
+      {
+        name: userName,
+        stopTime: previousDives
+          ? previousDives.createdAt
+          : focusedDateRangeStop.toString(),
+      }
+    );
+  });
+
+  return incrementedDive.records[0].get("dive").properties;
 };
 
 export const startNewDive = async (userName, sessionContext) => {
@@ -68,7 +129,7 @@ export const startNewDive = async (userName, sessionContext) => {
 
   const dateNow = DateTime.utc();
   const dateCurrent = dateNow.minus(getReadDelta(1));
-  const datePrevious = DateTime.fromISO(previousDive.createdAt).setZone('utc');
+  const datePrevious = DateTime.fromISO(previousDive.createdAt).setZone("utc");
   console.log(dateCurrent, datePrevious);
   const finalDate = dateCurrent > datePrevious ? dateCurrent : datePrevious;
   const newDive = await session.executeWrite((tx) => {
@@ -121,21 +182,26 @@ export const acknowlegeClaim = async (
 ) => {
   const session = getSession(sessionContext);
 
-  const claims = await session.executeWrite((tx) => {
+  const dive = await session.executeWrite((tx) => {
     return tx.run(
       `
       MATCH (u:User {name: $name})-[:FOCUSES]->(d:Dive)
       SET d.stopAt = $creationTime
       SET d.acknowledgmentLogs = d.acknowledgmentLogs + $logs
+      RETURN d as dive
       `,
       {
         name: userName,
         creationTime,
-        logs: JSON.stringify({ name: creatorName, time: creationTime }),
+        logs: JSON.stringify({
+          createdBy: creatorName,
+          createdAt: creationTime,
+          readAt: DateTime.utc().toString(),
+        }),
       }
     );
   });
-  return null;
+  return dive.records[0].get("dive").properties;
 };
 
 export const matchClaim = async (userName, createdAt, sessionContext) => {
@@ -154,4 +220,3 @@ export const matchClaim = async (userName, createdAt, sessionContext) => {
   const properties = newClaim.records[0].get("claim").properties;
   return properties;
 };
-
