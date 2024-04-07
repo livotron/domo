@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useAppDispatch } from "app/store";
 import { ChangeEvent, MouseEvent, useState } from "react";
-import { createPost } from "./postsSlice";
+import { createPost } from "./slice";
 
 export const WriteClaim = () => {
   const [level, setLevel] = useState(8);

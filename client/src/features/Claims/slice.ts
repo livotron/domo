@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Claim } from "./types";
 import { AppDispatch, AppThunk } from "app/store";
-import { writeClaim } from "./postsApi";
+import { writeClaim } from "./api";
 
 interface postsSliceState {
   myPosts: Claim[];
