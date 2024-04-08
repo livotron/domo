@@ -34,13 +34,17 @@ router.post("/new-dive", auth, async function (req, res) {
 });
 
 router.get("/get-dive", auth, async function (req, res) {
-  const dive = await getUserFocus(req.user.name, res)
-  res.send(dive)
+  const dive = await getUserFocus(req.user.name, res);
+  res.send(dive);
 });
 
 router.post("/increment-dive", auth, async function (req, res) {
-  const createdDive = await incrementDive(req.user.name, req);
-  res.send(createdDive);
+  try {
+    const createdDive = await incrementDive(req.user.name, req);
+    res.send(createdDive);
+  } catch (error) {
+    res.status(400).send(error);
+  }
 });
 
 router.post("/acknowledge", auth, async function (req, res) {

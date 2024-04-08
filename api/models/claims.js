@@ -5,14 +5,14 @@ import { DateTime } from "luxon";
 const getReadDelta = (level) => {
   const deltas = [
     null,
-    { hours: 20 },
-    { hours: 10 },
-    { hours: 5 },
+    { hours: 26 },
+    { hours: 14 },
+    { hours: 6 },
+    { hours: 3 },
     { hours: 2 },
     { hours: 1 },
     { minutes: 30 },
     { minutes: 15 },
-    { minutes: 5 },
     null,
   ];
   return deltas[level];
@@ -77,7 +77,7 @@ export const getLastDiveInRange = async (
       WHERE d.createdAt > $rangeStop AND d.level > $level
       RETURN d as dive
       ORDER BY d.createdAt DESC
-      SKIP 1
+      //SKIP 1
       LIMIT 1
       `,
       {
@@ -94,33 +94,50 @@ export const getLastDiveInRange = async (
 export const incrementDive = async (userName, sessionContext) => {
   const session = getSession(sessionContext);
   const focusedDive = await getUserFocus(userName, sessionContext);
-  const focusedDateRangeStop = DateTime.fromISO(focusedDive.createdAt)
-    .setZone("utc")
-    .minus(getReadDelta(focusedDive.level + 1));
-  console.log(focusedDive, focusedDateRangeStop);
-  const previousDives = await getLastDiveInRange(
-    userName,
-    focusedDateRangeStop,
-    focusedDive.level,
-    sessionContext
-  );
-  const incrementedDive = await session.executeWrite((tx) => {
-    return tx.run(
-      `
+  let incrementedDive;
+  if (focusedDive.level === 8) {
+    if (focusedDive.level > 8) throw new Error("Dive out of scope");
+
+    incrementedDive = await session.executeWrite((tx) => {
+      return tx.run(
+        `
+          MATCH (u:User {name: $name})-[:FOCUSES]->(d:Dive)
+          SET d.level = d.level + 1
+          RETURN d as dive
+          `,
+        {
+          name: userName,
+        }
+      );
+    });
+  } else {
+    const focusedDateRangeStop = DateTime.fromISO(focusedDive.createdAt)
+      .setZone("utc")
+      .minus(getReadDelta(focusedDive.level + 1));
+    console.log(focusedDive, focusedDateRangeStop);
+    const previousDives = await getLastDiveInRange(
+      userName,
+      focusedDateRangeStop,
+      focusedDive.level,
+      sessionContext
+    );
+    const incrementedDive = await session.executeWrite((tx) => {
+      return tx.run(
+        `
         MATCH (u:User {name: $name})-[:FOCUSES]->(d:Dive)
         SET d.level = d.level + 1
         SET d.stopAt = $stopTime
         RETURN d as dive
         `,
-      {
-        name: userName,
-        stopTime: previousDives
-          ? previousDives.createdAt
-          : focusedDateRangeStop.toString(),
-      }
-    );
-  });
-
+        {
+          name: userName,
+          stopTime: previousDives
+            ? previousDives.createdAt
+            : focusedDateRangeStop.toString(),
+        }
+      );
+    });
+  }
   return incrementedDive.records[0].get("dive").properties;
 };
 
@@ -170,9 +187,9 @@ export const getClaims = async (userName, sessionContext) => {
       `
       MATCH (u:User {name: $name})-[:FOCUSES]->(d:Dive)
       WITH d.createdAt as from, d.stopAt as to, d.level as level
-      MATCH (c:Claim)
+      MATCH (c:Claim)<-[:WRITES]-(u:User)
       WHERE c.level = level AND c.createdAt < from AND c.createdAt > to
-      return c as claims
+      return c as claims, u as user
       ORDER BY c.createdAt ASC
       `,
       {
@@ -181,7 +198,10 @@ export const getClaims = async (userName, sessionContext) => {
     );
   });
   console.log(claims.records);
-  const properties = claims.records.map((rec) => rec.get("claims").properties);
+  const properties = claims.records.map((rec) => ({
+    ...rec.get("claims").properties,
+    createdBy: rec.get("user").properties,
+  }));
   return properties;
 };
 
