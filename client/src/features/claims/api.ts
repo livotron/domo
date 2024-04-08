@@ -7,7 +7,7 @@ export interface WriteClaimProps {
   level: number;
 }
 export async function writeClaim(props: WriteClaimProps): Promise<Claim> {
-  const response = await axios.post<Claim>("/claims", { ...props });
+  const response = await axios.post<Claim>("/claims", props);
   return response.data;
 }
 
@@ -23,6 +23,18 @@ export async function callCreateDive(): Promise<Dive> {
 
 export async function callIncrementDive(): Promise<Dive> {
   const response = await axios.post<Dive>("/claims/increment-dive");
+  return response.data;
+}
+
+export interface AcknowledgeClaimProps {
+  creationTime: string;
+  creatorName: string;
+}
+
+export async function acknowledgeClaimCall(
+  props: AcknowledgeClaimProps
+): Promise<Dive> {
+  const response = await axios.post<Dive>("/claims/acknowledge", props);
   return response.data;
 }
 

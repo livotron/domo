@@ -24,8 +24,8 @@ export const SearchUser = ({ getSearchedUser, searchContext }: Props) => {
     const inputValueCapitalized = newInputValue.toUpperCase();
     if (inputValueCapitalized.length === 0) setOptions([]);
     if (
-      (inputValueCapitalized.length === 3 && inputValue.length < 3) ||
-      (inputValueCapitalized.length > 3 &&
+      (inputValueCapitalized.trim().length === 3 && inputValue.length < 3) ||
+      (inputValueCapitalized.trim().length > 3 &&
         inputValueCapitalized.substring(0, 3) !== inputValue.substring(0, 3))
     ) {
       setLoading(true);
