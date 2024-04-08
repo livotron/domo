@@ -121,7 +121,7 @@ export const incrementDive = async (userName, sessionContext) => {
       focusedDive.level,
       sessionContext
     );
-    const incrementedDive = await session.executeWrite((tx) => {
+    incrementedDive = await session.executeWrite((tx) => {
       return tx.run(
         `
         MATCH (u:User {name: $name})-[:FOCUSES]->(d:Dive)
@@ -205,7 +205,7 @@ export const getClaims = async (userName, sessionContext) => {
   return properties;
 };
 
-export const acknowlegeClaim = async (
+export const acknowledgeClaim = async (
   userName,
   creationTime,
   creatorName,

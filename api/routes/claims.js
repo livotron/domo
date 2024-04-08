@@ -1,7 +1,7 @@
 import express from "express";
 import auth from "../src/auth.js";
 import {
-  acknowlegeClaim,
+  acknowledgeClaim,
   createClaim,
   getClaims,
   getUserFocus,
@@ -43,12 +43,12 @@ router.post("/increment-dive", auth, async function (req, res) {
     const createdDive = await incrementDive(req.user.name, req);
     res.send(createdDive);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send({message: error.message});
   }
 });
 
 router.post("/acknowledge", auth, async function (req, res) {
-  const createdDive = await acknowlegeClaim(
+  const createdDive = await acknowledgeClaim(
     req.user.name,
     req.body.creationTime,
     req.body.creatorName,
