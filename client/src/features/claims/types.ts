@@ -1,9 +1,11 @@
+import { User } from "features/user/types"
 
 export type Claim = {
   title: string,
   text: string,
   level: number,
-  createdAt?: string
+  createdAt: string,
+  createdBy: User
 }
 
 export type Dive = {

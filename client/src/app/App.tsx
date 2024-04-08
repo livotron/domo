@@ -62,7 +62,7 @@ function App() {
             <Grid xs={4} item>
               <Link to="/me">{me.name.replaceAll("_", " ")}</Link>
             </Grid>
-            <Grid xs="auto">{level}</Grid>
+            <Grid item xs="auto">{level}</Grid>
             <Grid item xs="auto">
               <Button
                 type="submit"
