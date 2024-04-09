@@ -42,7 +42,10 @@ export const WriteClaim = () => {
   };
   const dispatch = useAppDispatch();
   const handleSubmit = () => {
-    dispatch(createPost({ title, text: content, level: level || 8 }));
+    if (level) dispatch(createPost({ title, text: content, level: level }));
+    setLevel("");
+    setTitle("");
+    setContent("");
   };
 
   useEffect(() => {
@@ -122,7 +125,7 @@ export const WriteClaim = () => {
         type="submit"
         variant="contained"
         onClick={handleSubmit}
-        disabled={false}
+        disabled={!Boolean(level) || title.trim().length < 3}
       >
         ЗАПОСТИТИ
       </Button>
