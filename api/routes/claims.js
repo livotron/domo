@@ -4,6 +4,7 @@ import {
   acknowledgeClaim,
   createClaim,
   getClaims,
+  getClaimsByUser,
   getUserFocus,
   incrementDive,
   matchClaim,
@@ -63,8 +64,13 @@ router.get("/by-time-and-user/:time/:name", auth, async function (req, res) {
 });
 
 router.get("/get-claims", auth, async function (req, res) {
-  const claim = await getClaims(req.user.name, req);
-  res.send(claim);
+  const claims = await getClaims(req.user.name, req);
+  res.send(claims);
+});
+
+router.get("/claims-by-user/:name", auth, async function (req, res) {
+  const claims = await getClaimsByUser(req.params.name, req);
+  res.send(claims);
 });
 
 export default router;

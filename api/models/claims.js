@@ -114,7 +114,6 @@ export const incrementDive = async (userName, sessionContext) => {
     const focusedDateRangeStop = DateTime.fromISO(focusedDive.createdAt)
       .setZone("utc")
       .minus(getReadDelta(focusedDive.level + 1));
-    console.log(focusedDive, focusedDateRangeStop);
     const previousDives = await getLastDiveInRange(
       userName,
       focusedDateRangeStop,
@@ -154,7 +153,6 @@ export const startNewDive = async (userName, sessionContext) => {
     const datePrevious = DateTime.fromISO(previousDive.createdAt).setZone(
       "utc"
     );
-    console.log(dateCurrent, datePrevious);
     finalDate = dateCurrent > datePrevious ? dateCurrent : datePrevious;
   } else {
     finalDate = dateCurrent;
@@ -197,7 +195,28 @@ export const getClaims = async (userName, sessionContext) => {
       }
     );
   });
-  console.log(claims.records);
+  const properties = claims.records.map((rec) => ({
+    ...rec.get("claims").properties,
+    createdBy: rec.get("user").properties,
+  }));
+  return properties;
+};
+
+export const getClaimsByUser = async (userName, sessionContext) => {
+  const session = getSession(sessionContext);
+
+  const claims = await session.executeRead((tx) => {
+    return tx.run(
+      `
+      MATCH (c:Claim)<-[:WRITES]-(u:User{name: $name})
+      return c as claims, u as user
+      ORDER BY c.createdAt ASC
+      `,
+      {
+        name: userName,
+      }
+    );
+  });
   const properties = claims.records.map((rec) => ({
     ...rec.get("claims").properties,
     createdBy: rec.get("user").properties,

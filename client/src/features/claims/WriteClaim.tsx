@@ -6,44 +6,92 @@ import {
   Select,
   SelectChangeEvent,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useAppDispatch } from "app/store";
-import { ChangeEvent, MouseEvent, useState } from "react";
-import { createPost } from "./slice";
+import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
+import { createPost, getMyClaims } from "./slice";
+import { useSelector } from "react-redux";
+import { RootState } from "app/rootReducer";
+import { DateTime } from "luxon";
+
+const writeClaimItems = [
+  { level: 8, title: "ДОБА", delta: { minutes: 5 } },
+  { level: 7, title: "ТРИ ДОБИ", delta: { minutes: 15 } },
+  { level: 6, title: "ТИЖДЕНЬ", delta: { minutes: 30 } },
+  { level: 5, title: "ДВА ТИЖНІ", delta: { hours: 1 } },
+  { level: 4, title: "МІСЯЦЬ", delta: { hours: 2 } },
+  { level: 3, title: "КВАРТАЛ", delta: { hours: 4 } },
+  { level: 2, title: "ПІВРІЧЧЯ", delta: { hours: 8 } },
+  { level: 1, title: "РІК", delta: { hours: 16 } },
+];
 
 export const WriteClaim = () => {
-  const [level, setLevel] = useState(8);
+  const [level, setLevel] = useState<"" | number>("");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-
+  const { myClaims, myClaimsInitiated, loading } = useSelector(
+    (state: RootState) => state.claims
+  );
+  const { name: userName } = useSelector((state: RootState) => state.user.me);
+  const { level: diveLevel } = useSelector(
+    (state: RootState) => state.claims.myDive
+  );
   const handleLevelChange = (event: SelectChangeEvent) => {
     setLevel(Number(event.target.value));
   };
   const dispatch = useAppDispatch();
   const handleSubmit = () => {
-    dispatch(createPost({ title, text: content, level }));
+    dispatch(createPost({ title, text: content, level: level || 8 }));
   };
+
+  useEffect(() => {
+    if (!myClaimsInitiated && userName) dispatch(getMyClaims(userName));
+  }, [dispatch, userName]);
+  const dateTimeNow = DateTime.now();
+  const myClaimsDesc = [...myClaims].reverse();
+  const fullClaimItems = writeClaimItems.map((item) => {
+    const lastPostIndex = myClaimsDesc.findIndex(
+      (claim) => claim.level === item.level
+    );
+    if (lastPostIndex === -1) return { ...item, releaseAt: null };
+    const releaseDateTime = DateTime.fromISO(
+      myClaimsDesc[lastPostIndex].createdAt
+    ).plus(item.delta);
+    const releaseAt = releaseDateTime > dateTimeNow ? releaseDateTime : null;
+    return { ...item, releaseAt };
+  });
+
+  console.log(fullClaimItems);
+
+  const menuItems = fullClaimItems.map((item) => (
+    <MenuItem
+      key={item.title}
+      disabled={diveLevel < item.level || Boolean(item.releaseAt)}
+      value={item.level}
+    >
+      {item.title + " "}
+      <Typography variant="caption">{`${diveLevel < item.level ? " (недостатній рівень)" : ""}${
+        item.releaseAt ? item.releaseAt.diff(dateTimeNow, "hour").toHuman() : ""
+      }`}</Typography>
+    </MenuItem>
+  ));
 
   return (
     <div>
       <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">ПЕРІОД</InputLabel>
+        <InputLabel size="small" id="demo-simple-select-label">
+          ПЕРІОД
+        </InputLabel>
         <Select
           size="small"
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={level.toString()}
+          value={level?.toString()}
           label="ПЕРІОД"
           onChange={handleLevelChange}
         >
-          <MenuItem value={8}>ДОБА</MenuItem>
-          <MenuItem value={7}>3 ДОБИ</MenuItem>
-          <MenuItem value={6}>ТИЖДЕНЬ</MenuItem>
-          <MenuItem value={5}>2 ТИЖНІ</MenuItem>
-          <MenuItem value={4}>МІСЯЦЬ</MenuItem>
-          <MenuItem value={3}>КВАРТАЛ</MenuItem>
-          <MenuItem value={2}>ПІВРІЧЧЯ</MenuItem>
-          <MenuItem value={1}>РІК</MenuItem>
+          {menuItems}
         </Select>
       </FormControl>
       <TextField

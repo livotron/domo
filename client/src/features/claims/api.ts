@@ -42,3 +42,10 @@ export async function fetchClaims(): Promise<Claim[]> {
   const response = await axios.get<Claim[]>("/claims/get-claims");
   return response.data;
 }
+
+export async function fetchClaimsByUser(userName: string): Promise<Claim[]> {
+  const response = await axios.get<Claim[]>(
+    `/claims/claims-by-user/${userName}`
+  );
+  return response.data;
+}

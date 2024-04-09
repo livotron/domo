@@ -7,6 +7,7 @@ import {
   callCreateDive,
   callIncrementDive,
   fetchClaims,
+  fetchClaimsByUser,
   getDive,
   writeClaim,
   WriteClaimProps,
@@ -16,6 +17,7 @@ import { DateTime } from "luxon";
 
 interface claimsSliceState {
   myClaims: Claim[];
+  myClaimsInitiated: boolean;
   claims: Claim[];
   myDive: Dive;
   claimsInitiated: boolean;
@@ -24,6 +26,7 @@ interface claimsSliceState {
 
 const initialState: claimsSliceState = {
   myClaims: [],
+  myClaimsInitiated: false,
   myDive: { createdAt: "", stopAt: "", level: 0, acknowlegmentLogs: [] },
   claims: [],
   claimsInitiated: false,
@@ -43,6 +46,10 @@ const claimsSlice = createSlice({
     receiveClaims(state, action: PayloadAction<Claim[]>) {
       state.claims = action.payload;
       state.claimsInitiated = true;
+    },
+    receiveMyClaims(state, action: PayloadAction<Claim[]>) {
+      state.myClaims = action.payload;
+      state.myClaimsInitiated = true;
     },
     cleanClaims(state) {
       state.claims = [];
@@ -88,6 +95,15 @@ export const fetchDive = (): AppThunk => async (dispatch: AppDispatch) => {
     dispatch(claimsSlice.actions.fulfilled());
   }
 };
+
+export const getMyClaims =
+  (userName: string): AppThunk =>
+  async (dispatch: AppDispatch) => {
+    dispatch(claimsSlice.actions.pending());
+    const claims = await fetchClaimsByUser(userName);
+    dispatch(claimsSlice.actions.receiveMyClaims(claims));
+    dispatch(claimsSlice.actions.fulfilled());
+  };
 
 export const getClaims =
   (): AppThunk => async (dispatch: AppDispatch, getState: () => RootState) => {
