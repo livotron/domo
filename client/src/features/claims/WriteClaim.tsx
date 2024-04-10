@@ -86,7 +86,7 @@ export const WriteClaim = () => {
       &nbsp;
       <Typography variant="caption">{`${diveLevel < item.level ? " (недостатній рівень)" : ""}${
         item.releaseAt
-          ? ` (часу залишилось: ${item.releaseAt.diff(dateTimeNow, "hour").toFormat("d дн h год m хв")})`
+          ? ` (доступно через: ${item.releaseAt.diff(dateTimeNow, "hour").toFormat("d дн h год m хв")})`
           : ""
       }`}</Typography>
     </MenuItem>
