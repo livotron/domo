@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useAppDispatch } from "app/store";
-import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
+import { ChangeEvent, MouseEvent, useEffect, useMemo, useState } from "react";
 import { createPost, getMyClaims } from "./slice";
 import { useSelector } from "react-redux";
 import { RootState } from "app/rootReducer";
@@ -28,6 +28,7 @@ const writeClaimItems = [
 
 export const WriteClaim = () => {
   const [level, setLevel] = useState<"" | number>("");
+  const [dateTimeNow, setDateTimeNow] = useState(DateTime.now());
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const { myClaims, myClaimsInitiated, loading } = useSelector(
@@ -49,23 +50,31 @@ export const WriteClaim = () => {
   };
 
   useEffect(() => {
+    const interval = setInterval(() => setDateTimeNow(DateTime.now()), 60000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!myClaimsInitiated && userName) dispatch(getMyClaims(userName));
   }, [dispatch, userName]);
-  const dateTimeNow = DateTime.now();
-  const myClaimsDesc = [...myClaims].reverse();
-  const fullClaimItems = writeClaimItems.map((item) => {
-    const lastPostIndex = myClaimsDesc.findIndex(
-      (claim) => claim.level === item.level
-    );
-    if (lastPostIndex === -1) return { ...item, releaseAt: null };
-    const releaseDateTime = DateTime.fromISO(
-      myClaimsDesc[lastPostIndex].createdAt
-    ).plus(item.delta);
-    const releaseAt = releaseDateTime > dateTimeNow ? releaseDateTime : null;
-    return { ...item, releaseAt };
-  });
 
-  console.log(fullClaimItems);
+  const fullClaimItems = useMemo(() => {
+    const myClaimsDesc = [...myClaims].reverse();
+    console.log("calculating...");
+    return writeClaimItems.map((item) => {
+      const lastPostIndex = myClaimsDesc.findIndex(
+        (claim) => claim.level === item.level
+      );
+      if (lastPostIndex === -1) return { ...item, releaseAt: null };
+      const releaseDateTime = DateTime.fromISO(
+        myClaimsDesc[lastPostIndex].createdAt
+      ).plus(item.delta);
+      const releaseAt = releaseDateTime > dateTimeNow ? releaseDateTime : null;
+      return { ...item, releaseAt };
+    });
+  }, [dateTimeNow, myClaims]);
 
   const menuItems = fullClaimItems.map((item) => (
     <MenuItem
@@ -73,9 +82,12 @@ export const WriteClaim = () => {
       disabled={diveLevel < item.level || Boolean(item.releaseAt)}
       value={item.level}
     >
-      {item.title + " "}
+      {item.title}
+      &nbsp;
       <Typography variant="caption">{`${diveLevel < item.level ? " (недостатній рівень)" : ""}${
-        item.releaseAt ? item.releaseAt.diff(dateTimeNow, "hour").toHuman() : ""
+        item.releaseAt
+          ? ` (часу залишилось: ${item.releaseAt.diff(dateTimeNow, "hour").toFormat("d дн h год m хв")})`
+          : ""
       }`}</Typography>
     </MenuItem>
   ));
