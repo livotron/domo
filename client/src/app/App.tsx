@@ -20,13 +20,20 @@ import { RootState } from "./rootReducer";
 import { DisplayRelationsPage } from "features/user/DisplayRelationsPage";
 import { VerifiedLogin } from "features/user/VerifiedLogin";
 import { WriteClaim } from "features/claims/WriteClaim";
-import { fetchDive, removeClaims } from "features/claims/slice";
+import {
+  fetchDive,
+  removeClaims,
+  setCurrentLevel,
+} from "features/claims/slice";
 import { ScrollClaims } from "features/claims/ScrollClaims";
+import { getCurrentLevel } from "./utils";
 
 function App() {
   const dispatch = useAppDispatch();
   const me = useSelector((state: RootState) => state.user.me);
-  const { level } = useSelector((state: RootState) => state.claims.myDive);
+  const { myDive: dive, currentLevel } = useSelector(
+    (state: RootState) => state.claims
+  );
 
   useEffect(() => {
     if (localStorage.getItem("TOKEN")) {
@@ -34,6 +41,19 @@ function App() {
       dispatch(fetchDive());
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!dive.level) return;
+    dispatch(setCurrentLevel(getCurrentLevel(dive)));
+    const interval = setInterval(() => {
+      const newLevel = getCurrentLevel(dive);
+      if (newLevel < currentLevel) dispatch(setCurrentLevel(newLevel));
+    }, 60000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [dispatch, dive, currentLevel]);
+
   const navigate = useNavigate();
   const handleLogout = (e: MouseEvent) => {
     e.preventDefault();
@@ -62,7 +82,9 @@ function App() {
             <Grid xs={4} item>
               <Link to="/me">{me.name.replaceAll("_", " ")}</Link>
             </Grid>
-            <Grid item xs="auto">{level}</Grid>
+            <Grid item xs="auto">
+              {currentLevel}
+            </Grid>
             <Grid item xs="auto">
               <Button
                 type="submit"

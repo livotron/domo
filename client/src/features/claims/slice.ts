@@ -20,6 +20,7 @@ interface claimsSliceState {
   myClaimsInitiated: boolean;
   claims: Claim[];
   myDive: Dive;
+  currentLevel: number;
   claimsInitiated: boolean;
   loading: boolean;
 }
@@ -28,13 +29,14 @@ const initialState: claimsSliceState = {
   myClaims: [],
   myClaimsInitiated: false,
   myDive: { createdAt: "", stopAt: "", level: 0, acknowlegmentLogs: [] },
+  currentLevel: 0,
   claims: [],
   claimsInitiated: false,
   loading: true,
 };
 
 const claimsSlice = createSlice({
-  name: "Posts",
+  name: "claims",
   initialState,
   reducers: {
     addMyPost(state, action: PayloadAction<Claim>) {
@@ -50,6 +52,9 @@ const claimsSlice = createSlice({
     receiveMyClaims(state, action: PayloadAction<Claim[]>) {
       state.myClaims = action.payload;
       state.myClaimsInitiated = true;
+    },
+    setCurrentLevel(state, action: PayloadAction<number>) {
+      state.currentLevel = action.payload;
     },
     cleanClaims(state) {
       state.claims = [];
@@ -136,5 +141,5 @@ export const incrementDive = (): AppThunk => async (dispatch: AppDispatch) => {
   else dispatch(claimsSlice.actions.fulfilled());
 };
 
-export const { removeClaims, cleanClaims } = claimsSlice.actions;
+export const { removeClaims, cleanClaims, setCurrentLevel } = claimsSlice.actions;
 export default claimsSlice.reducer;
